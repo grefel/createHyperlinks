@@ -20,8 +20,8 @@ if (app.extractLabel("px:debugID") == "Jp07qcLlW3aDHuCoNpBK_Gregor") {
 
 /****************
 * Logging Class 
-* @Version: 1.05
-* @Date: 2018-08-10
+* @Version: 1.07
+* @Date: 2018-10-10
 * @Author: Gregor Fellenz, http://www.publishingx.de
 * Acknowledgments: Library design pattern from Marc Aturet https://forums.adobe.com/thread/1111415
 
@@ -38,7 +38,7 @@ $.global.hasOwnProperty('idsLog') || ( function (HOST, SELF) {
 	* PRIVATE
 	*/
 	var INNER = {};
-	INNER.version = "2018-08-10-1.05";
+	INNER.version = "2018-09-26-1.06";
 	INNER.disableAlerts = false;
 	INNER.logLevel = 0;
 	INNER.SEVERITY = [];
@@ -341,6 +341,9 @@ $.global.hasOwnProperty('idsLog') || ( function (HOST, SELF) {
 			*/
 			warn : function (message) {
 				message = INNER.processMsg(message);
+				if (typeof px != "undefined" && px.hasOwnProperty ("debug") && px.debug) {
+					$.writeln("WARN: \n" + message);
+				}				
 				if (INNER.logLevel <= 2) {
 					INNER.writeLog(message, "WARN", logFile);
 					counter.warn++;
@@ -503,8 +506,13 @@ $.global.hasOwnProperty('idsLog') || ( function (HOST, SELF) {
 			*/
 			getElapsedTime : function () {			
 				return INNER.msToTime($.hiresTimer);
-			}
-		
+			},
+			/**
+			* Returns the current log Folder path
+			*/
+			getLogFolder : function () {
+				return logFile.parent;
+			}		
 		} 
 	};
 }) ( $.global, { toString : function() {return 'idsLog';} } );
@@ -631,13 +639,11 @@ function processDok(dok) {
 		// Mails Adressen verarbeiten 		
 		if (configObject.createMailLinks) {	
 			var MailProtocol = "(?i)(?<![@\\-])\\b(?:mailto://)?";
-			var MailName = "[\\n\\l][\\n\\l._-]+\\@";
-			var MailDomain = "(?:[\\n\\l][\\n\\l_-]*\\.)+";
-			var MailTLD = "(?:[\\n\\l][\\n\\l]+)";
-			var MailEnd = "(?=(\\.\\s|\\.$|,|;|:|\\)|]|\\s|\"|\'|$|/))";		
+			var MailName = "[\\n\\l\\d][\\n\\l\\d._-]+\\@";
+			var MailDomain = "(?:[\\n\\l\\d][\\n\\l\\d_-]*\\.)+";
+			var MailTLD = "(?:[\\n\\l\\d]{2,})";
+			var MailEnd = "(?=(\\.\\p{Zs}|\\.\\r|,|;|:|>|\\)|]|\\p{Zs}|\\t|\"|\'|\\r|$|))";
 			app.findGrepPreferences.findWhat = MailProtocol + MailName + MailDomain + MailTLD + MailEnd;
-
-
 
 			var findResults = dok.findGrep(true);
 			
@@ -651,9 +657,9 @@ function processDok(dok) {
 		// Web URLs verarbeiten 
 		if (configObject.createWebLinks) {
 			var URLProtocol = "(?i)(?<![@\\-])\\b(?:http://|https://|www\\.)?";
-			var URLSubDomain = "(?:[\\n\\l][\\n\\l_-]+\\.){2,}";
-			var URLTLD = "(?:[\\n\\l][\\n\\l]+)";
-			var URLEnd = "(?:(?:/|:|/\\n|:\\n)\\S[^@]+?(?=(\\.\\s|\\.$|,|;|:|\\)|]|\\s|\"|\'|$))|(?=(\\.\\s|\\.$|,|;|>|:|\\)|]|\\s|\"|\'|$|/)))";
+			var URLSubDomain = "(?:[\\n\\l\\d][\\n\\l\\d_-]+\\.){2,}";
+			var URLTLD = "(?:[\\n\\l\\d]{2,})";
+			var URLEnd = "(?:(?:/|:|/\\n|:\\n)\\S([^@]|\\n)+?(?=(\\.\\p{Zs}|\\.\\r|,|;|:|\\)|]|\\p{Zs}|\\t|\"|\'|\\r|$))|(?=(\\.\\p{Zs}|\\.\\r|,|;|:|>|\\)|]|\\p{Zs}|\\t|\"|\'|\\r|$|/)))";
 			app.findGrepPreferences.findWhat = URLProtocol + URLSubDomain  + URLTLD + URLEnd;
 
 			findResults = dok.findGrep(true);
