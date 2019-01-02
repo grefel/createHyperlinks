@@ -1,12 +1,12 @@
 # createHyperlinks
 
-Converts Text into real Hyperlinks. 
+This InDesign Script converts Text into real Hyperlinks. The script is `createHyperlinks_v2.jsx` 
 
 
 ![GUI](https://raw.githubusercontent.com/grefel/createHyperlinks/master/gui.png)
 
 ## Install
-Copy createHyperlinks_v2.jsx into your InDesign **Scripts Panel**.
+Copy `createHyperlinks_v2.jsx` into your InDesign **Scripts Panel**.
 
 ![Scripts Panel](https://raw.githubusercontent.com/grefel/press2id/master/docu/assets/scriptsPanel.png)
 
