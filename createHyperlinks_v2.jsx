@@ -1,4 +1,4 @@
-﻿//DESCRIPTION:Das Skript erstellt aus URLs und E-Mail-Adressen InDesign-Hyperlinks. 
+﻿//DESCRIPTION:Das Skript erstellt aus URLs und E-Mail-Adressen InDesign-Hyperlinks.
 //Contact: Gregor Fellenz - http://www.publishingx.de
 
 var px = {
@@ -634,7 +634,7 @@ function processDok(dok) {
 			var MailName = "[\\n\\l][\\n\\l._-]+\\@";
 			var MailDomain = "(?:[\\n\\l][\\n\\l_-]*\\.)+";
 			var MailTLD = "(?:[\\n\\l][\\n\\l]+)";
-			var MailEnd = "(?=(\\.\\s|\\.$|,|;|:|\\)|]|\\s|\"|\'|$|/))";		
+			var MailEnd = "(?=(\\.\\s|\\.$|,|;|:|\\)|]|\\v|\"|\'|$|/))";		
 			app.findGrepPreferences.findWhat = MailProtocol + MailName + MailDomain + MailTLD + MailEnd;
 
 
@@ -653,7 +653,7 @@ function processDok(dok) {
 			var URLProtocol = "(?i)(?<![@\\-])\\b(?:http://|https://|www\\.)?";
 			var URLSubDomain = "(?:[\\n\\l][\\n\\l_-]+\\.){2,}";
 			var URLTLD = "(?:[\\n\\l][\\n\\l]+)";
-			var URLEnd = "(?:(?:/|:|/\\n|:\\n)\\S[^@]+?(?=(\\.\\s|\\.$|,|;|:|\\)|]|\\s|\"|\'|$))|(?=(\\.\\s|\\.$|,|;|>|:|\\)|]|\\s|\"|\'|$|/)))";
+			var URLEnd = "(?:(?:/|:|/\\n|:\\n)\\S[^@]+?(?=(\\.\\s|\\.$|,|;|:|\\)|]|\\s|\"|\'|$))|(?=(\\.\\v|\\.$|,|;|>|:|\\)|]|\\v|\"|\'|$|/)))";
 			app.findGrepPreferences.findWhat = URLProtocol + URLSubDomain  + URLTLD + URLEnd;
 
 			findResults = dok.findGrep(true);
