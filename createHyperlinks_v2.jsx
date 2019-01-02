@@ -2,17 +2,19 @@
 //Contact: Gregor Fellenz - http://www.publishingx.de
 
 var px = {
-	projectName:"createHyperlinks_v2.jsx",
-	version:"2018-09-11-v1.0",
-	
+	projectName: "createHyperlinks_v2.1.jsx",
+	version: "2019-01-02-v1.0",
+
+	showSummary: true,
+
 	// Verwaltung
-	runWithUndo:true,
-	showGUI:true,
-	appendLog:true,
-	debug:false
+	runWithUndo: true,
+	showGUI: true,
+	appendLog: true,
+	debug: false
 }
 
-if (app.extractLabel("px:debugID") == "Jp07qcLlW3aDHuCoNpBK_Gregor") {
+if (app.extractLabel("px:debugID") == "Jp07qcLlW3aDHuCoNpBK_Gregor-") {
 	px.debug = true;
 	px.showGUI = true;
 
@@ -421,7 +423,7 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 			/**
 			* Shows all infos
 			*/
-			showInfos: function () {
+			showSummary: function () {
 				INNER.showMessages("Es gab " + counter.info + " Infos", messages.info, localize({ en: "informations", de: " der Informationen" }));
 			},
 			/**
@@ -526,28 +528,28 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 main();
 
 function main() {
-	if  (app.documents.length == 0) {
-		alert("Kein Dokument geöffnet", "Hinweis"); 
-		return;
-	}	
-	if (app.layoutWindows.length == 0)  {
-		alert("Kein Dokument sichtbar", "Hinweis"); 
+	if (app.documents.length == 0) {
+		alert("Kein Dokument geöffnet", "Hinweis");
 		return;
 	}
-		
+	if (app.layoutWindows.length == 0) {
+		alert("Kein Dokument sichtbar", "Hinweis");
+		return;
+	}
+
 	// Init Log
 	initLog();
-	
+
 	var dok = app.documents[0];
 	log.info("Verarbeite Datei: " + dok.name);
-	
+
 	var ial = app.scriptPreferences.userInteractionLevel;
 	var redraw = app.scriptPreferences.enableRedraw;
-	var scriptPrefVersion = app.scriptPreferences.version; 
-	
+	var scriptPrefVersion = app.scriptPreferences.version;
+
 	if (px.debug) {
 		app.scriptPreferences.version = parseInt(app.version);
-		log.info("processDok mit app.scriptPreferences.version " + app.scriptPreferences.version  + " app.version " + app.version);
+		log.info("processDok mit app.scriptPreferences.version " + app.scriptPreferences.version + " app.version " + app.version);
 		if (checkDok(dok)) {
 			if (px.runWithUndo) {
 				app.doScript(processDok, ScriptLanguage.JAVASCRIPT, [dok], UndoModes.ENTIRE_SCRIPT, px.projectName);
@@ -555,17 +557,17 @@ function main() {
 			else {
 				processDok(dok);
 			}
-		}	
+		}
 	}
 	else {
 		try {
-			if(dok && dok.isValid) {		
-				
+			if (dok && dok.isValid) {
+
 				app.scriptPreferences.userInteractionLevel = UserInteractionLevels.NEVER_INTERACT;
 				app.scriptPreferences.enableRedraw = false;
 				app.scriptPreferences.version = parseInt(app.version);
-				log.info("processDok mit app.scriptPreferences.version " + app.scriptPreferences.version  + " app.version " + app.version);
-				
+				log.info("processDok mit app.scriptPreferences.version " + app.scriptPreferences.version + " app.version " + app.version);
+
 				if (checkDok(dok)) {
 					if (px.runWithUndo) {
 						app.doScript(processDok, ScriptLanguage.JAVASCRIPT, [dok], UndoModes.ENTIRE_SCRIPT, px.projectName);
@@ -582,22 +584,33 @@ function main() {
 		finally {
 			app.scriptPreferences.userInteractionLevel = ial;
 			app.scriptPreferences.enableRedraw = redraw;
-			app.scriptPreferences.version = scriptPrefVersion;			
+			app.scriptPreferences.version = scriptPrefVersion;
 			app.findGrepPreferences = NothingEnum.NOTHING;
 			app.changeGrepPreferences = NothingEnum.NOTHING;
 		}
 	}
 
-	if(log.getCounters().warn > 0) {
+	if (log.getCounters().warn > 0) {
 		log.showWarnings();
 	}
-//~ 	else {
-//~ 		log.infoAlert("Fertig");
-//~ 	}
-
 	log.info("Skriptlauf Ende");
 	log.elapsedTime();
+	if (px.showSummary) {
+		var dialogWin = new Window("dialog", px.projectName + px.version);
+		dialogWin.etMsg = dialogWin.add("edittext", undefined, px.mailtoSummary + "\n" + px.urlSummary, { multiline: true, scrolling: true });
+		dialogWin.etMsg.maximumSize.height = 300;
+		dialogWin.etMsg.minimumSize.width = 500;
+
+		dialogWin.gControl = dialogWin.add("group");
+		dialogWin.gControl.preferredSize.width = 500;
+		dialogWin.gControl.alignChildren = ['right', 'center'];
+		dialogWin.gControl.margins = 0;
+		dialogWin.gControl.add("button", undefined, "Ok", { name: "ok" });
+		dialogWin.show();
+	}
 }
+
+
 
 
 /* Functions structuring the execution */
@@ -605,17 +618,18 @@ function checkDok(dok) {
 	// Hier darf im Dokument keine Änderung vorgenommen werden, weil diese Außerhalb des UNDO wären!
 	// Fehler --> 
 	// log.warn("Wir haben ein Problem --> return false");
-	
+
 	return true;
 }
 
 function processDok(dok) {
 	if (px.runWithUndo) {
-		dok = dok[0]; 
+		dok = dok[0];
 	}
 	var configObject = getConfig(dok);
 	if (configObject == 2) {
 		// User canceled
+		px.showSummary = false;
 		return;
 	}
 
@@ -641,45 +655,102 @@ function processDok(dok) {
 		app.findGrepPreferences = NothingEnum.nothing;
 		app.changeGrepPreferences = NothingEnum.nothing;
 
+		var result = false;
+		var counter = 0;
+
 		// Mails Adressen verarbeiten 		
-		if (configObject.createMailLinks) {	
+		if (configObject.createMailLinks) {
 			var MailProtocol = "(?i)(?<![@\\-])\\b(?:mailto://)?";
 			var MailName = "[\\n\\l][\\n\\l._-]+\\@";
-			var MailDomain = "(?:[\\n\\l][\\n\\l_-]*\\.)+";
-			var MailTLD = "(?:[\\n\\l][\\n\\l]+)";
-			var MailEnd = "(?=(\\.\\s|\\.$|,|;|:|\\)|]|\\v|\"|\'|$|/))";		
+			var MailDomain = "(?:[\\n\\l\\d][\\n\\l\\d_-]+\\.){1,}";
+			if (configObject.allowLongTLDs) {
+				var MailTLD = "(?:[\\n\\l]{2,}+|xn--[\\n\\l\\d]{2,})";
+			}
+			else {
+				var MailTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|COM|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";				
+			}
+			var MailEnd = "(?=(\\.\\s|\\.$|,|;|>|:|\\)|]|\"|\'|$|/|\\s))";
 			app.findGrepPreferences.findWhat = MailProtocol + MailName + MailDomain + MailTLD + MailEnd;
-
 			var findResults = dok.findGrep(true);
-			
-			for (var i =0; i < findResults.length ; i++) {
+
+			for (var i = 0; i < findResults.length; i++) {
 				var textObject = findResults[i];
 				var mailAdress = getMail(textObject.contents);
-				createHyperLink(dok, textObject, mailAdress, configObject);		
-				log.debug("mailto-Hyperlink: " + textObject.contents + " -> " + mailAdress);
+				result = createHyperLink(dok, textObject, mailAdress, configObject);
+				if (result) {
+					counter++;
+					log.info("Mailto-Hyperlink: " + textObject.contents + " -> " + mailAdress);
+				}
 			}
+			log.info(counter  + " Mailto-Hyperlinks!");
+			px.mailtoSummary = counter  + " Mailto-Hyperlinks";
+			counter = 0;
 		}
 		// Web URLs verarbeiten 
 		if (configObject.createWebLinks) {
 			var URLProtocol = "(?i)(?<![@\\-])\\b(?:http://|https://|www\\.)?";
-			var URLSubDomain = "(?:[\\n\\l][\\n\\l_-]+\\.){2,}";
-			var URLTLD = "(?:[\\n\\l][\\n\\l]+)";
-			var URLEnd = "(?:(?:/|:|/\\n|:\\n)\\S[^@]+?(?=(\\.\\s|\\.$|,|;|:|\\)|]|\\s|\"|\'|$))|(?=(\\.\\v|\\.$|,|;|>|:|\\)|]|\\v|\"|\'|$|/)))";
-			app.findGrepPreferences.findWhat = URLProtocol + URLSubDomain  + URLTLD + URLEnd;
-
+			var URLFirstDomainPart = "(?:[\\l\\d][\\l\\d_-]+\\.){1,}";
+			var URLDomain = "(?:[\\n\\l\\d][\\n\\l\\d_-]+\\.){1,}";
+			var URLTLD = MailTLD;
+			var URLText = "(?:(?:/|/\\n|\\?|#|:)\\S{2,})?"
+			var URLEnd = MailEnd;
+			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
 			findResults = dok.findGrep(true);
 
-			for (var i =0; i < findResults.length ; i++) {
+			for (var i = 0; i < findResults.length; i++) {
 				var textObject = findResults[i];
 				var url = getWebURL(textObject.contents);
-				createHyperLink(dok, textObject, url, configObject);		
-				log.debug("URL-Hyperlink: " + textObject.contents + " -> " + url);
+				result = createHyperLink(dok, textObject, url, configObject);
+				if (result) {
+					counter++;
+					log.info("URL-Hyperlink 1: " + textObject.contents + " -> " + url);
+				}
 			}
-		}
 
-		app.findGrepPreferences = NothingEnum.nothing;
-		app.findChangeGrepOptions = NothingEnum.nothing;
-	} 
+			// Force http(s) or www at beginning
+			URLProtocol = "(?i)(?<![@\\-])\\b(?:http://|https://|www\\.)";
+			URLFirstDomainPart = "";
+			URLDomain = "(?:[\\n\\l\\d][\\n\\l\\d_-]+\\.){1,}";
+
+			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
+			findResults = dok.findGrep(true);
+
+			for (var i = 0; i < findResults.length; i++) {
+				var textObject = findResults[i];
+				var url = getWebURL(textObject.contents);
+				var result = createHyperLink(dok, textObject, url, configObject);
+				if (result) {
+					counter++;
+					log.info("URL-Hyperlink Force http(s) or www at beginning: " + textObject.contents + " -> " + url);
+				}
+			}
+
+			// Force short and old TLDs
+			URLProtocol = "(?i)(?<![@\\-])\\b";
+			URLFirstDomainPart = "";
+			URLDomain = "(?:[\\n\\l\\d][\\n\\l\\d_-]+\\.){1,}";
+			URLTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|COM|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
+			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
+			findResults = dok.findGrep(true);
+
+			for (var i = 0; i < findResults.length; i++) {
+				var textObject = findResults[i];
+				var url = getWebURL(textObject.contents);
+				var result = createHyperLink(dok, textObject, url, configObject);
+				if (result) {
+					counter++;
+					log.info("URL-Hyperlink Force short and old TLDs: " + textObject.contents + " -> " + url);
+				}
+			}
+
+			log.info(counter  + " URL-Hyperlinks!");
+			px.urlSummary = counter  + " URL-Hyperlinks";
+			counter = 0;
+
+			app.findGrepPreferences = NothingEnum.nothing;
+			app.findChangeGrepOptions = NothingEnum.nothing;
+		}
+	}
 	catch (e) {
 		log.warn(e);
 	}
@@ -698,21 +769,21 @@ function processDok(dok) {
 /* Functions with fine grained tasks */
 function getConfig(dok) {
 	configObject = {};
-	
+
 	if (!px.showGUI) {
 		configObject.applyCStyle = true;
-		configObject.cStyle = dok.characterStyles[0];		
+		configObject.cStyle = dok.characterStyles[0];
 		configObject.processMasterSpread = true;
 		return configObject;
 	}
-	var win = new Window("dialog", px.projectName + " – v"  + px.version);  
+	var win = new Window("dialog", px.projectName + " – v" + px.version);
 	with (win) {
-//~ 		win.sInfo = add( "statictext", undefined, "Konfigurationseinstellungen für die Erstellung der Hyperlinks", {multiline: true} );
-//~ 		win.sInfo.alignment = "left";
-//~ 		win.sInfo.preferredSize.width = 410;
-//~ 		win.sInfo.preferredSize.height = 32; 
-		
-		win.pInfo = add( "panel", undefined, "Welche Hyperlinks sollen erstellt werden?" );
+		//~ 		win.sInfo = add( "statictext", undefined, "Konfigurationseinstellungen für die Erstellung der Hyperlinks", {multiline: true} );
+		//~ 		win.sInfo.alignment = "left";
+		//~ 		win.sInfo.preferredSize.width = 410;
+		//~ 		win.sInfo.preferredSize.height = 32; 
+
+		win.pInfo = add("panel", undefined, "Welche Hyperlinks sollen erstellt werden?");
 		win.pInfo.preferredSize.width = 420;
 		win.pInfo.orientation = 'row';
 		win.pInfo.spacing = 10;
@@ -720,18 +791,20 @@ function getConfig(dok) {
 			win.pInfo.gInfo = add("group");
 			win.pInfo.gInfo.orientation = 'column';
 			win.pInfo.gInfo.alignChildren = ['left', 'top'];
-			win.pInfo.gInfo.margins = [0,10,0,0];
+			win.pInfo.gInfo.margins = [0, 10, 0, 0];
 			win.pInfo.gInfo.spacing = 5;
-			with(win.pInfo.gInfo){
-				win.pInfo.gInfo.addWebLinks = add( "checkbox", undefined, "Web Hyperlinks erstellen");
+			with (win.pInfo.gInfo) {
+				win.pInfo.gInfo.addWebLinks = add("checkbox", undefined, "Web Hyperlinks erstellen");
 				win.pInfo.gInfo.addWebLinks.value = true;
-				win.pInfo.gInfo.addMailLinks = add( "checkbox", undefined, "Mailto Hyperlinks erstellen");
+				win.pInfo.gInfo.addMailLinks = add("checkbox", undefined, "Mailto Hyperlinks erstellen");
 				win.pInfo.gInfo.addMailLinks.value = true;
+				win.pInfo.gInfo.allowLongTLDs = add("checkbox", undefined, "Lange/Neue TLDs erlauben (.köln ...)");
+				win.pInfo.gInfo.allowLongTLDs.value = true;
 			}
 		}
-		
-		
-		win.pCharStyle = add( "panel", undefined, "Soll ein Zeichenformat angewendet werden?" );
+
+
+		win.pCharStyle = add("panel", undefined, "Soll ein Zeichenformat angewendet werden?");
 		win.pCharStyle.preferredSize.width = 420;
 		win.pCharStyle.orientation = 'row';
 		win.pCharStyle.spacing = 10;
@@ -739,19 +812,19 @@ function getConfig(dok) {
 			win.pCharStyle.gInfo = add("group");
 			win.pCharStyle.gInfo.orientation = 'column';
 			win.pCharStyle.gInfo.alignChildren = ['left', 'top'];
-			win.pCharStyle.gInfo.margins = [0,10,0,0];
+			win.pCharStyle.gInfo.margins = [0, 10, 0, 0];
 			win.pCharStyle.gInfo.spacing = 5;
-			with(win.pCharStyle.gInfo){
-				win.pCharStyle.gInfo.addCStyleCB = add( "checkbox", undefined, "Zeichenformat anwenden");
+			with (win.pCharStyle.gInfo) {
+				win.pCharStyle.gInfo.addCStyleCB = add("checkbox", undefined, "Zeichenformat anwenden");
 				win.pCharStyle.gInfo.addCStyleCB.value = false;
 				win.pCharStyle.gInfo.gZeichenformat = add("group");
-				with(win.pCharStyle.gInfo.gZeichenformat) {
-					
-					win.pCharStyle.gInfo.gZeichenformat.sText = add( "statictext", undefined, "Zeichenformat:" );
+				with (win.pCharStyle.gInfo.gZeichenformat) {
+
+					win.pCharStyle.gInfo.gZeichenformat.sText = add("statictext", undefined, "Zeichenformat:");
 					win.pCharStyle.gInfo.gZeichenformat.sText.preferredSize.width = 100;
-					win.pCharStyle.gInfo.gZeichenformat.dd = add( "dropdownlist", undefined, []);
+					win.pCharStyle.gInfo.gZeichenformat.dd = add("dropdownlist", undefined, []);
 					for (var p = 0; p < dok.allCharacterStyles.length; p++) {
-						temp = win.pCharStyle.gInfo.gZeichenformat.dd.add ('item', dok.allCharacterStyles[p].name);
+						temp = win.pCharStyle.gInfo.gZeichenformat.dd.add('item', dok.allCharacterStyles[p].name);
 						temp.cstyle = dok.allCharacterStyles[p];
 					}
 					win.pCharStyle.gInfo.gZeichenformat.dd.preferredSize.width = 280;
@@ -759,7 +832,7 @@ function getConfig(dok) {
 				}
 			}
 		}
-		win.pMasterSpread = add( "panel", undefined, "Sollen Hyperlinks auf Musterdruckbögen erstellt werden?");
+		win.pMasterSpread = add("panel", undefined, "Sollen Hyperlinks auf Musterdruckbögen erstellt werden?");
 		win.pMasterSpread.preferredSize.width = 420;
 		win.pMasterSpread.orientation = 'row';
 		win.pMasterSpread.spacing = 10;
@@ -767,46 +840,48 @@ function getConfig(dok) {
 			win.pMasterSpread.gInfo = add("group");
 			win.pMasterSpread.gInfo.orientation = 'column';
 			win.pMasterSpread.gInfo.alignChildren = ['left', 'top'];
-			win.pMasterSpread.gInfo.margins = [0,10,0,0];
+			win.pMasterSpread.gInfo.margins = [0, 10, 0, 0];
 			win.pMasterSpread.gInfo.spacing = 5;
-			with(win.pMasterSpread.gInfo){
+			with (win.pMasterSpread.gInfo) {
 				win.pMasterSpread.gInfo.gZeichenformat = add("group");
-				with(win.pMasterSpread.gInfo.gZeichenformat) {
-					win.pMasterSpread.gInfo.gZeichenformat.addCStyleCB = add( "checkbox", undefined, "Musterdruckbögen einbeziehen");
-					win.pMasterSpread.gInfo.gZeichenformat.addCStyleCB.value = false;					
+				with (win.pMasterSpread.gInfo.gZeichenformat) {
+					win.pMasterSpread.gInfo.gZeichenformat.addCStyleCB = add("checkbox", undefined, "Musterdruckbögen einbeziehen");
+					win.pMasterSpread.gInfo.gZeichenformat.addCStyleCB.value = false;
 				}
 			}
 		}
-	
+
 		// Steuerung Ok/Cancel
 		win.groupStart = add("group");
 		win.groupStart.preferredSize.width = 420;
 		win.groupStart.alignChildren = ['right', 'center'];
 		win.groupStart.margins = 0;
 		with (win.groupStart) {
-			win.groupStart.butOk = add( "button", undefined, "Ok" );
-			win.groupStart.butCancel = add( "button", undefined, "Abbrechen" );
+			win.groupStart.butOk = add("button", undefined, "Ok");
+			win.groupStart.butCancel = add("button", undefined, "Abbrechen");
 		}
 	}
-	
+
 
 	// Ok / Cancel
-	win.groupStart.butOk.onClick = function() {
+	win.groupStart.butOk.onClick = function () {
 		configObject.createWebLinks = win.pInfo.gInfo.addWebLinks.value;
 		log.info("User Web-Links erstellen : " + configObject.createWebLinks);
 		configObject.createMailLinks = win.pInfo.gInfo.addMailLinks.value;
 		log.info("User Mail-Links erstellen : " + configObject.createMailLinks);
-		
+		configObject.allowLongTLDs = win.pInfo.gInfo.allowLongTLDs.value;
+		log.info("User erlaubt lange TLD : " + configObject.allowLongTLDs);
+
 		configObject.applyCStyle = win.pCharStyle.gInfo.addCStyleCB.value;
 		log.info("User will Zeichenformat anwenden: " + configObject.applyCStyle);
 		configObject.cStyle = win.pCharStyle.gInfo.gZeichenformat.dd.selection.cstyle;
-		log.info("User wählt Zeichenformat: " + configObject.cStyle.name);		
+		log.info("User wählt Zeichenformat: " + configObject.cStyle.name);
 		configObject.processMasterSpread = win.pMasterSpread.gInfo.gZeichenformat.addCStyleCB.value;
 		log.info("User will Musterseiten verarbeiten: " + configObject.processMasterSpread);
 		win.close(0);
 	}
-	win.groupStart.butCancel.onClick = function(){
-		win.close (2);
+	win.groupStart.butCancel.onClick = function () {
+		win.close(2);
 	}
 
 	// Show Window
@@ -827,37 +902,40 @@ function createHyperLink(dok, textObject, url, configObject) {
 		if (configObject.applyCStyle) {
 			textObject.appliedCharacterStyle = configObject.cStyle;
 		}
-		var quelle = dok.hyperlinkTextSources.add (textObject);
+		var quelle = dok.hyperlinkTextSources.add(textObject);
 		var urlDestination = dok.hyperlinkURLDestinations.itemByName(url);
-		if (!urlDestination.isValid) urlDestination = dok.hyperlinkURLDestinations.add(url, {name:url});
-		var hlink = dok.hyperlinks.add (quelle, urlDestination);
+		if (!urlDestination.isValid) urlDestination = dok.hyperlinkURLDestinations.add(url, { name: url });
+		var hlink = dok.hyperlinks.add(quelle, urlDestination);
 		hlink.name = url;
-//~ 		log.info("Hyperink erstellt: " + textObject.contents + " -> " + url);
-	} 
+		//~ 		log.info("Hyperink erstellt: " + textObject.contents + " -> " + url);
+		return true;
+	}
 	catch (e) {
-		if (e.number == 79111 ) {
+		if (e.number == 79111) {
 			/* "Das ausgewählte Objekt wird bereits von einem anderen Hyperlink verwendet." -> weiter, schneller als die Prüfung mit isHyperlink() */
-		} 
-		else if (e.number == 79110 ) {
+		}
+		else if (e.number == 79110) {
 			/* "Dieser Name wird bereits von einem anderen Objekt verwendet" -> weiter, schneller als die Prüfung mit isHyperlink() */
-		} 
+			return true;
+		}
 		else {
 			log.warn(e);
 		}
 	}
+	return false;
 }
 
 function getWebURL(url) {
-	url= cleanInDesignString(url);
-	if(url.indexOf ("http") != 0) {
+	url = cleanInDesignString(url);
+	if (url.indexOf("http") != 0) {
 		url = "http://" + url;
 	}
 	return url;
 }
 
 function getMail(url) {
-	url= cleanInDesignString(url);
-	if(url.indexOf ("mailto") != 0) {
+	url = cleanInDesignString(url);
+	if (url.indexOf("mailto") != 0) {
 		url = "mailto:" + url;
 	}
 	return url;
@@ -867,11 +945,11 @@ function getMail(url) {
 function cleanInDesignString(string) {
 	string = string.replace(/[\u0003\u0007\u0016\u0008]/g, ''); // <control> Character können raus
 	string = string.replace(/\s/g, ''); // Leerräume entfernen  
-//~ 	string = string.replace(/\n/g, ' '); // Leerräume
-//~ 	string = string.replace(/\r/g, ' '); // Leerräume
-//~ 	string = string.replace(/\t/g, ' '); // Leerräume
-//~ 	string = string.replace(/[\u00A0\u202F\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A]/g, ' '); // Leerräume
-//~ 	string = string.replace(/  +/g, ' '); // Leerräume
+	//~ 	string = string.replace(/\n/g, ' '); // Leerräume
+	//~ 	string = string.replace(/\r/g, ' '); // Leerräume
+	//~ 	string = string.replace(/\t/g, ' '); // Leerräume
+	//~ 	string = string.replace(/[\u00A0\u202F\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A]/g, ' '); // Leerräume
+	//~ 	string = string.replace(/  +/g, ' '); // Leerräume
 	string = string.replace(/\uFEFF/g, ''); // InDesign Spezialzeichen entfernen 
 	string = string.replace(/\u00AD/g, ''); // Bedingte Trennung 
 	string = string.replace(/^\s+/, '').replace(/\s+$/, ''); // trim;
@@ -885,38 +963,38 @@ function initLog() {
 		scriptFolderPath = scriptFolderPath.parent;
 	}
 
-	var logFolder = Folder( scriptFolderPath + "/log/");	
+	var logFolder = Folder(scriptFolderPath + "/log/");
 	if (!logFolder.create()) {
 		// Schreibe Log auf den Desktop
-		logFolder = Folder( Folder.desktop + "/indesign-log/");
+		logFolder = Folder(Folder.desktop + "/indesign-log/");
 		logFolder.create();
-	} 
+	}
 	if (px.appendLog) {
-		var logFile = File ( logFolder + "/" + px.projectName + "_log.txt" );
+		var logFile = File(logFolder + "/" + px.projectName + "_log.txt");
 	}
 	else {
 		var date = new Date();
-		date = date.getFullYear() + "-" + pad(date.getMonth() + 1, 2) +"-" + pad(date.getDate(), 2) + "_" + pad(date.getHours(), 2) + "-" + pad(date.getMinutes(), 2) + "-" +  pad(date.getSeconds(), 2);
-		var logFile = File ( logFolder + "/" + date + "_" + px.projectName + "_log.txt" );		
+		date = date.getFullYear() + "-" + pad(date.getMonth() + 1, 2) + "-" + pad(date.getDate(), 2) + "_" + pad(date.getHours(), 2) + "-" + pad(date.getMinutes(), 2) + "-" + pad(date.getSeconds(), 2);
+		var logFile = File(logFolder + "/" + date + "_" + px.projectName + "_log.txt");
 	}
 
 	if (px.debug) {
 		log = idsLog.getLogger(logFile, "DEBUG", true);
 		log.clearLog();
-	} 
+	}
 	else {
 		log = idsLog.getLogger(logFile, "INFO", false);
 	}
-	log.info("Starte " + px.projectName + " v " + px.version + " Debug: " + px.debug + " ScriptPrefVersion: " + app.scriptPreferences.version + " InDesign v " + app.version );
+	log.info("Starte " + px.projectName + " v " + px.version + " Debug: " + px.debug + " ScriptPrefVersion: " + app.scriptPreferences.version + " InDesign v " + app.version);
 	return logFile;
 }
 /** Pad a numer witth leading zeros */
-function pad (number, length, fill) { 
+function pad(number, length, fill) {
 	if (fill == undefined) fill = "0";
 	var str = '' + number;
 	while (str.length < length) {
 		str = fill + str;
-	} 
+	}
 	return str;
 }
 
@@ -924,9 +1002,9 @@ function pad (number, length, fill) {
 /*Folder*/ function getScriptFolderPath() {
 	var skriptPath;
 	try {
-		skriptPath  = app.activeScript.parent;
-	} 
-	catch (e) { 
+		skriptPath = app.activeScript.parent;
+	}
+	catch (e) {
 		/* We're running from the ESTK*/
 		skriptPath = File(e.fileName).parent;
 	}
