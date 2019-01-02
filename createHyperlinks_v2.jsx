@@ -20,8 +20,8 @@ if (app.extractLabel("px:debugID") == "Jp07qcLlW3aDHuCoNpBK_Gregor") {
 
 /****************
 * Logging Class 
-* @Version: 1.05
-* @Date: 2018-08-10
+* @Version: 1.07
+* @Date: 2018-10-10
 * @Author: Gregor Fellenz, http://www.publishingx.de
 * Acknowledgments: Library design pattern from Marc Aturet https://forums.adobe.com/thread/1111415
 
@@ -38,7 +38,7 @@ $.global.hasOwnProperty('idsLog') || ( function (HOST, SELF) {
 	* PRIVATE
 	*/
 	var INNER = {};
-	INNER.version = "2018-08-10-1.05";
+	INNER.version = "2018-09-26-1.06";
 	INNER.disableAlerts = false;
 	INNER.logLevel = 0;
 	INNER.SEVERITY = [];
@@ -341,6 +341,9 @@ $.global.hasOwnProperty('idsLog') || ( function (HOST, SELF) {
 			*/
 			warn : function (message) {
 				message = INNER.processMsg(message);
+				if (typeof px != "undefined" && px.hasOwnProperty ("debug") && px.debug) {
+					$.writeln("WARN: \n" + message);
+				}				
 				if (INNER.logLevel <= 2) {
 					INNER.writeLog(message, "WARN", logFile);
 					counter.warn++;
@@ -503,8 +506,13 @@ $.global.hasOwnProperty('idsLog') || ( function (HOST, SELF) {
 			*/
 			getElapsedTime : function () {			
 				return INNER.msToTime($.hiresTimer);
-			}
-		
+			},
+			/**
+			* Returns the current log Folder path
+			*/
+			getLogFolder : function () {
+				return logFile.parent;
+			}		
 		} 
 	};
 }) ( $.global, { toString : function() {return 'idsLog';} } );
@@ -636,8 +644,6 @@ function processDok(dok) {
 			var MailTLD = "(?:[\\n\\l][\\n\\l]+)";
 			var MailEnd = "(?=(\\.\\s|\\.$|,|;|:|\\)|]|\\v|\"|\'|$|/))";		
 			app.findGrepPreferences.findWhat = MailProtocol + MailName + MailDomain + MailTLD + MailEnd;
-
-
 
 			var findResults = dok.findGrep(true);
 			
