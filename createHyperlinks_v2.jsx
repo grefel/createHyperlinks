@@ -658,7 +658,12 @@ function processDok(dok) {
 		var result = false;
 		var counter = 0;
 
-		// Mails Adressen verarbeiten 		
+		// fixLineEndings 
+		app.findGrepPreferences.findWhat = ".$";
+		app.changeGrepPreferences.changeTo = "$0\\x{F0009}"
+		dok.changeGrep();
+
+		// Mails Adressen verarbeiten 
 		if (configObject.createMailLinks) {
 			var MailProtocol = "(?i)(?<![@\\-])\\b(?:mailto://)?";
 			var MailName = "[\\n\\l][\\n\\l._-]+\\@";
@@ -669,7 +674,7 @@ function processDok(dok) {
 			else {
 				var MailTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|COM|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";				
 			}
-			var MailEnd = "(?=(\\.\\s|\\.$|,|;|>|:|\\)|]|\"|\'|$|/|\\s))";
+			var MailEnd = "(?=(\\.\\s|\\.\\x{F0009}|,|;|>|:|\\)|]|\"|\'|\\x{F0009}|/|\\s))";
 			app.findGrepPreferences.findWhat = MailProtocol + MailName + MailDomain + MailTLD + MailEnd;
 			var findResults = dok.findGrep(true);
 
@@ -755,6 +760,11 @@ function processDok(dok) {
 		log.warn(e);
 	}
 	finally {
+
+		app.findGrepPreferences.findWhat = "\\x{F0009}$";
+		app.changeGrepPreferences.changeTo = ""
+		dok.changeGrep();
+
 		// Reset Options
 		app.findChangeGrepOptions.includeFootnotes = saveFindGrepOptions.includeFootnotes;
 		app.findChangeGrepOptions.includeHiddenLayers = saveFindGrepOptions.includeHiddenLayers;
