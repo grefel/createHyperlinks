@@ -3,7 +3,7 @@
 
 var px = {
 	projectName: "createHyperlinks_v2.1.jsx",
-	version: "2019-01-02-v1.0",
+	version: "2019-01-23-v2.0",
 
 	showSummary: true,
 
