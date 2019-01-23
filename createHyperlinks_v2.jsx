@@ -660,8 +660,14 @@ function processDok(dok) {
 
 		// fixLineEndings 
 		app.findGrepPreferences.findWhat = "\\n|\\r";
-		app.changeGrepPreferences.changeTo = "\\x{E009}$0"
+		app.changeGrepPreferences.changeTo = "\\x{E009} $0"
 		dok.changeGrep();
+
+		app.findGrepPreferences.findWhat = "\\z";
+		var textEndings = dok.findGrep(true);
+		for (var t = 0; t < textEndings.length; t++) {
+			textEndings[t].contents = "\uE009 ";
+		}
 
 		// Mails Adressen verarbeiten 
 		if (configObject.createMailLinks) {
@@ -761,7 +767,7 @@ function processDok(dok) {
 	}
 	finally {
 
-		app.findGrepPreferences.findWhat = "\\x{E009}$";
+		app.findGrepPreferences.findWhat = "(\\x{E009} )+$";
 		app.changeGrepPreferences.changeTo = ""
 		dok.changeGrep();
 
