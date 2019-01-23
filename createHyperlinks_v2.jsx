@@ -660,21 +660,21 @@ function processDok(dok) {
 
 		// fixLineEndings 
 		app.findGrepPreferences.findWhat = ".$";
-		app.changeGrepPreferences.changeTo = "$0\\x{F0009}"
+		app.changeGrepPreferences.changeTo = "$0\\x{E009}"
 		dok.changeGrep();
 
 		// Mails Adressen verarbeiten 
 		if (configObject.createMailLinks) {
 			var MailProtocol = "(?i)(?<![@\\-])\\b(?:mailto://)?";
-			var MailName = "[\\n\\l][\\n\\l._-]+\\@";
-			var MailDomain = "(?:[\\n\\l\\d][\\n\\l\\d_-]+\\.){1,}";
+			var MailName = "[\\n\\x{E009}\\l][\\n\\x{E009}\\l._-]+\\@";
+			var MailDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
 			if (configObject.allowLongTLDs) {
-				var MailTLD = "(?:[\\n\\l]{2,}+|xn--[\\n\\l\\d]{2,})";
+				var MailTLD = "(?:[\\n\\x{E009}\\l]{2,}+|xn--[\\n\\x{E009}\\l\\d]{2,})";
 			}
 			else {
 				var MailTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|COM|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";				
 			}
-			var MailEnd = "(?=(\\.\\s|\\.\\x{F0009}|,|;|>|:|\\)|]|\"|\'|\\x{F0009}|/|\\s))";
+			var MailEnd = "(?=(\\.\\s|\\.\\x{E009}|,|;|>|:|\\)|]|\"|\'|\\x{E009}|/|\\s))";
 			app.findGrepPreferences.findWhat = MailProtocol + MailName + MailDomain + MailTLD + MailEnd;
 			var findResults = dok.findGrep(true);
 
@@ -695,9 +695,9 @@ function processDok(dok) {
 		if (configObject.createWebLinks) {
 			var URLProtocol = "(?i)(?<![@\\-])\\b(?:http://|https://|www\\.)?";
 			var URLFirstDomainPart = "(?:[\\l\\d][\\l\\d_-]+\\.){1,}";
-			var URLDomain = "(?:[\\n\\l\\d][\\n\\l\\d_-]+\\.){1,}";
+			var URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
 			var URLTLD = MailTLD;
-			var URLText = "(?:(?:/|/\\n|\\?|#|:)\\S{2,})?"
+			var URLText = "(?:(?:/|/\\x{E009}\\n|\\?|#|:)\\S{2,})?"
 			var URLEnd = MailEnd;
 			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
 			findResults = dok.findGrep(true);
@@ -708,14 +708,14 @@ function processDok(dok) {
 				result = createHyperLink(dok, textObject, url, configObject);
 				if (result) {
 					counter++;
-					log.info("URL-Hyperlink 1: " + textObject.contents + " -> " + url);
+					log.info("URL-Hyperlink 1: " + textObject.contents + " -> " + url + " counter " + counter);
 				}
 			}
 
 			// Force http(s) or www at beginning
 			URLProtocol = "(?i)(?<![@\\-])\\b(?:http://|https://|www\\.)";
 			URLFirstDomainPart = "";
-			URLDomain = "(?:[\\n\\l\\d][\\n\\l\\d_-]+\\.){1,}";
+			URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
 
 			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
 			findResults = dok.findGrep(true);
@@ -726,14 +726,14 @@ function processDok(dok) {
 				var result = createHyperLink(dok, textObject, url, configObject);
 				if (result) {
 					counter++;
-					log.info("URL-Hyperlink Force http(s) or www at beginning: " + textObject.contents + " -> " + url);
+					log.info("URL-Hyperlink Force http(s) or www at beginning: " + textObject.contents + " -> " + url+ " counter " + counter);
 				}
 			}
 
 			// Force short and old TLDs
 			URLProtocol = "(?i)(?<![@\\-])\\b";
 			URLFirstDomainPart = "";
-			URLDomain = "(?:[\\n\\l\\d][\\n\\l\\d_-]+\\.){1,}";
+			URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
 			URLTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|COM|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
 			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
 			findResults = dok.findGrep(true);
@@ -744,7 +744,7 @@ function processDok(dok) {
 				var result = createHyperLink(dok, textObject, url, configObject);
 				if (result) {
 					counter++;
-					log.info("URL-Hyperlink Force short and old TLDs: " + textObject.contents + " -> " + url);
+					log.info("URL-Hyperlink Force short and old TLDs: " + textObject.contents + " -> " + url+ " counter " + counter);
 				}
 			}
 
@@ -761,7 +761,7 @@ function processDok(dok) {
 	}
 	finally {
 
-		app.findGrepPreferences.findWhat = "\\x{F0009}$";
+		app.findGrepPreferences.findWhat = "\\x{E009}$";
 		app.changeGrepPreferences.changeTo = ""
 		dok.changeGrep();
 
@@ -963,6 +963,7 @@ function cleanInDesignString(string) {
 	string = string.replace(/\uFEFF/g, ''); // InDesign Spezialzeichen entfernen 
 	string = string.replace(/\u00AD/g, ''); // Bedingte Trennung 
 	string = string.replace(/^\s+/, '').replace(/\s+$/, ''); // trim;
+	string = string.replace(/\uE009/g, ''); // E009 entfernen (wurde eingesetzt um den $ Bug in GREP zu umschiffen)
 	return string;
 }
 
