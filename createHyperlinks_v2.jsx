@@ -659,8 +659,8 @@ function processDok(dok) {
 		var counter = 0;
 
 		// fixLineEndings 
-		app.findGrepPreferences.findWhat = ".$";
-		app.changeGrepPreferences.changeTo = "$0\\x{E009}"
+		app.findGrepPreferences.findWhat = "\\n|\\r";
+		app.changeGrepPreferences.changeTo = "\\x{E009}$0"
 		dok.changeGrep();
 
 		// Mails Adressen verarbeiten 
