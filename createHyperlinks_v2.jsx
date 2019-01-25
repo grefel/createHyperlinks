@@ -3,7 +3,7 @@
 
 var px = {
 	projectName: "createHyperlinks_v2.1.jsx",
-	version: "2019-01-23-v2.0",
+	version: "2019-01-25-v2.0",
 
 	showSummary: true,
 
@@ -760,7 +760,7 @@ function processDok(dok) {
 			counter = 0;
 
 			app.findGrepPreferences = NothingEnum.nothing;
-			app.findChangeGrepOptions = NothingEnum.nothing;
+			app.changeGrepPreferences = NothingEnum.nothing;
 		}
 	}
 	catch (e) {
@@ -779,6 +779,10 @@ function processDok(dok) {
 		app.findChangeGrepOptions.includeLockedStoriesForFind = saveFindGrepOptions.includeLockedStoriesForFind;
 		app.findChangeGrepOptions.includeMasterPages = saveFindGrepOptions.includeMasterPages;
 		if (app.findChangeGrepOptions.hasOwnProperty("searchBackwards")) app.findChangeGrepOptions.searchBackwards = saveFindGrepOptions.searchBackwards;
+		
+		app.findGrepPreferences = NothingEnum.nothing;
+		app.changeGrepPreferences = NothingEnum.nothing;
+
 	}
 }
 
