@@ -703,7 +703,8 @@ function processDok(dok) {
 			var URLFirstDomainPart = "(?:[\\l\\d][\\l\\d_-]+\\.){1,}";
 			var URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
 			var URLTLD = MailTLD;
-			var URLText = "(?:(?:/|/\\x{E009}\\n|\\?|#|:)\\S{2,})?"
+			var URLText = "(?:(?:/|/\\x{E009}\\n|\\?|#|:)[^\\s\\].,;>:\"')]{2,})?";
+
 			var URLEnd = MailEnd;
 			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
 			findResults = dok.findGrep(true);
