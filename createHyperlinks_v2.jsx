@@ -2,8 +2,8 @@
 //Contact: Gregor Fellenz - http://www.publishingx.de
 
 var px = {
-	projectName: "createHyperlinks_v2.1.jsx",
-	version: "2019-01-25-v2.0",
+	projectName: "createHyperlinks_v2.2.jsx",
+	version: "2019-03-21-v2.2",
 
 	showSummary: true,
 
@@ -742,7 +742,7 @@ function processDok(dok) {
 		var result = false;
 		var counter = 0;
 
-		// fixLineEndings 
+		// fixLineEndings this breaks existing links ... especially toc
 		// app.findGrepPreferences.findWhat = "\\n|\\r";
 		// app.changeGrepPreferences.changeTo = "\\x{E009}$0"
 		// dok.changeGrep();
