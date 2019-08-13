@@ -602,7 +602,7 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 			*/
 			getLogFile: function () {
 				return logFile;
-			}			
+			}
 		}
 	};
 })($.global, { toString: function () { return 'idsLog'; } });
@@ -762,7 +762,7 @@ function processDok(dok) {
 				var MailTLD = "(?:[\\n\\x{E009}\\l]{2,}+|xn--[\\n\\x{E009}\\l\\d]{2,})";
 			}
 			else {
-				var MailTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|COM|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";				
+				var MailTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|COM|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
 			}
 			var MailEnd = "(?=(\\.\\s|\\.\\x{E009}|,|;|>|:|\\)|]|\"|\'|\\x{E009}|/|\\s))";
 			app.findGrepPreferences.findWhat = MailProtocol + MailName + MailDomain + MailTLD + MailEnd;
@@ -777,8 +777,8 @@ function processDok(dok) {
 					log.info("Mailto-Hyperlink: " + textObject.contents + " -> " + mailAdress);
 				}
 			}
-			log.info(counter  + " Mailto-Hyperlinks!");
-			px.mailtoSummary = counter  + " Mailto-Hyperlinks";
+			log.info(counter + " Mailto-Hyperlinks!");
+			px.mailtoSummary = counter + " Mailto-Hyperlinks";
 			counter = 0;
 		}
 		// Web URLs verarbeiten 
@@ -803,10 +803,29 @@ function processDok(dok) {
 				}
 			}
 
+			// Force http(s) or www at beginning at the beginning of line and end of line
+			URLProtocol = "(?i)^(?:http://|https://|www\\.)";
+			URLFirstDomainPart = "";
+			URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
+			var URLEnd = "$";
+			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
+			findResults = dok.findGrep(true);
+
+			for (var i = 0; i < findResults.length; i++) {
+				var textObject = findResults[i];
+				var url = getWebURL(textObject.contents);
+				var result = createHyperLink(dok, textObject, url, configObject);
+				if (result) {
+					counter++;
+					log.info("URL-Hyperlink Force http(s) or www at the beginning of line and end of line: " + textObject.contents + " -> " + url + " counter " + counter);
+				}
+			}
+
 			// Force http(s) or www at beginning
 			URLProtocol = "(?i)(?<![@\\-])\\b(?:http://|https://|www\\.)";
 			URLFirstDomainPart = "";
 			URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
+			var URLEnd = MailEnd;
 
 			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
 			findResults = dok.findGrep(true);
@@ -817,9 +836,11 @@ function processDok(dok) {
 				var result = createHyperLink(dok, textObject, url, configObject);
 				if (result) {
 					counter++;
-					log.info("URL-Hyperlink Force http(s) or www at beginning: " + textObject.contents + " -> " + url+ " counter " + counter);
+					log.info("URL-Hyperlink Force http(s) or www at beginning: " + textObject.contents + " -> " + url + " counter " + counter);
 				}
 			}
+
+
 
 			// Force short and old TLDs
 			URLProtocol = "(?i)(?<![@\\-])\\b";
@@ -835,12 +856,13 @@ function processDok(dok) {
 				var result = createHyperLink(dok, textObject, url, configObject);
 				if (result) {
 					counter++;
-					log.info("URL-Hyperlink Force short and old TLDs: " + textObject.contents + " -> " + url+ " counter " + counter);
+					log.info("URL-Hyperlink Force short and old TLDs: " + textObject.contents + " -> " + url + " counter " + counter);
 				}
 			}
 
-			log.info(counter  + " URL-Hyperlinks!");
-			px.urlSummary = counter  + " URL-Hyperlinks";
+
+			log.info(counter + " URL-Hyperlinks!");
+			px.urlSummary = counter + " URL-Hyperlinks";
 			counter = 0;
 
 			app.findGrepPreferences = NothingEnum.nothing;
@@ -863,7 +885,7 @@ function processDok(dok) {
 		app.findChangeGrepOptions.includeLockedStoriesForFind = saveFindGrepOptions.includeLockedStoriesForFind;
 		app.findChangeGrepOptions.includeMasterPages = saveFindGrepOptions.includeMasterPages;
 		if (app.findChangeGrepOptions.hasOwnProperty("searchBackwards")) app.findChangeGrepOptions.searchBackwards = saveFindGrepOptions.searchBackwards;
-		
+
 		app.findGrepPreferences = NothingEnum.nothing;
 		app.changeGrepPreferences = NothingEnum.nothing;
 
