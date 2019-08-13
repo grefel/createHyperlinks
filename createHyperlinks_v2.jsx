@@ -2,8 +2,8 @@
 //Contact: Gregor Fellenz - http://www.publishingx.de
 
 var px = {
-	projectName: "createHyperlinks_v2.2.jsx",
-	version: "2019-03-21-v2.2",
+	projectName: "createHyperlinks_v2.3.jsx",
+	version: "2019-08-13-v2.3",
 
 	showSummary: true,
 
@@ -787,7 +787,7 @@ function processDok(dok) {
 			var URLFirstDomainPart = "(?:[\\l\\d][\\l\\d_-]+\\.){1,}";
 			var URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
 			var URLTLD = MailTLD;
-			var URLText = "(?:(?:/|/\\x{E009}\\n|\\?|#|:)[^\\s\\].,;>:\"')]{2,})?";
+			var URLText = "(?:(?:/|/\\x{E009}\\n|\\?|#|:)[^\\s\\].,;>:\"')]{2,}(?:\\.[a-Z]{2,5})?)?";
 
 			var URLEnd = MailEnd;
 			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
