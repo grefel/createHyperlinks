@@ -1,5 +1,9 @@
-﻿//DESCRIPTION:Das Skript erstellt aus URLs und E-Mail-Adressen InDesign-Hyperlinks.
+﻿//DESCRIPTION:The script creates InDesign hyperlinks from URLs and e-mail addresses.
+//SCRIPTMENU:Create Hyperlinks
+//This script is licensed under the GNU General Public License v3.0 https://www.gnu.org/licenses/gpl-3.0.txt
+//Project: https://github.com/grefel/clearOverrides
 //Contact: Gregor Fellenz - http://www.publishingx.de
+
 
 var px = {
 	projectName: "createHyperlinks_v2.3.jsx",
