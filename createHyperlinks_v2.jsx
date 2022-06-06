@@ -6,8 +6,8 @@
 
 
 var px = {
-	projectName: "createHyperlinks_v2.3.jsx",
-	version: "2019-08-13-v2.3",
+	projectName: "createHyperlinks_v2.31.jsx",
+	version: "2022-06-03-v2.31",
 
 	showSummary: true,
 
@@ -26,14 +26,14 @@ if (app.extractLabel("px:debugID") == "Jp07qcLlW3aDHuCoNpBK_Gregor-") {
 
 /****************
 * Logging Class 
-* @Version: 1.18
-* @Date: 2020-05-20
+* @Version: 1.23
+* @Date: 2022-05-17
 * @Author: Gregor Fellenz, http://www.publishingx.de
-* Acknowledgments: Library design pattern from Marc Aturet https://forums.adobe.com/thread/1111415
+* Acknowledgments: Library design pattern from Marc Autret https://forums.adobe.com/thread/1111415
 
 * Usage: 
 
-log = idsLog.getLogger("~/Desktop/testLog.txt", "INFO");
+log = idsLog.getLogger(File("~/Desktop/testLog.txt"), "INFO");
 log.warnAlert("Warn message");
 
 */
@@ -73,7 +73,12 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 	INNER.getPageNameFromObject = function (object) {
 		var pagePositionMessage = "";
 		if (object != null) {
-			object = object.getElements()[0]; // Get Object from Superclass like PageItem
+			try {
+				object = object.getElements()[0]; // Get Object from Superclass like PageItem
+			}
+			catch (e) {
+				return localize({ en: "Could not detect page", de: "Konnte Seite nicht ermitteln" }) + " > " + e.toString();
+			}
 			if (object.hasOwnProperty("sourceText")) {
 				object = object.sourceText;
 			}
@@ -84,7 +89,7 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 						return localize({ en: "XML Content", de: "In der XML Struktur" });
 					}
 					else {
-						object = object.parent.parentStory.textContainers[object.parentStory.textContainers.length - 1];
+						object = object.parentStory.textContainers[object.parentStory.textContainers.length - 1];
 						pagePositionMessage += localize({ en: "Overset text. Position of the last text frame: ", de: "Im Übersatz. Position des letzten Textrahmens: " });
 					}
 				}
@@ -183,7 +188,7 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 		}
 	};
 	INNER.showMessages = function (title, msgArray, type) {
-		if (!INNER.disableAlerts && msgArray.length > 0) {
+		if (!INNER.disableAlerts && msgArray.length > 0 && !app.hasOwnProperty("serverHostName")) {
 			var callingScriptVersion = "    ";
 			if ($.global.hasOwnProperty("px") && $.global.px.hasOwnProperty("projectName")) {
 				callingScriptVersion += px.projectName;
@@ -227,12 +232,16 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 					dialogWin.close();
 				}
 			}
-			dialogWin.gControl.add("button", undefined, "Ok", { name: "ok" });
+			var button = dialogWin.gControl.add("button", undefined, "Ok", { name: "ok" });
+			button.active = true;
 			dialogWin.show();
 		}
 	};
 	INNER.confirmMessages = function (title, msgArray, type) {
-		if (!INNER.disableAlerts && msgArray.length > 0) {
+		if (app.hasOwnProperty("serverHostName")) {
+			throw Error("Cannot confirm on server!");
+		}
+		else if (!INNER.disableAlerts && msgArray.length > 0) {
 			var callingScriptVersion = "    ";
 			// if ($.global.hasOwnProperty("px") && $.global.px.hasOwnProperty("projectName")) {
 			// 	callingScriptVersion += px.projectName;
@@ -265,15 +274,14 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 				}
 			}
 			dialogWin.gControl.add("button", undefined, localize({ en: "Cancel", de: "Abbrechen" }), { name: "cancel" });
-			dialogWin.gControl.add("button", undefined, "Ok", { name: "ok" });
+			var button = dialogWin.gControl.add("button", undefined, "Ok", { name: "ok" });
+			button.active = true;
 			return dialogWin.show();
 		}
 	};
-
 	INNER.confirm = function (message, noAsDefault, title) {
 		return confirm(message, noAsDefault, title);
-	}
-
+	};
 	INNER.getFileFilter = function (fileFilter) {
 		if (fileFilter == undefined || File.fs == "Windows") {
 			return fileFilter;
@@ -292,7 +300,6 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 			}
 		}
 	};
-
 	INNER.msToTime = function (microseconds) {
 		var milliseconds = microseconds / 1000;
 		var ms = parseInt((milliseconds % 1000) / 100)
@@ -315,15 +322,15 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 		return h + ':' + m + ':' + s + "." + ms;
 	};
 	/****************
-    * API 
-    */
+	* API 
+	*/
 
-    /**
-    * Returns a log Object
-    * @logFile {File|String} Path to logfile as File Object or String.
-    * @logLevel {String} Log Threshold  "OFF", "ERROR", "WARN", "INFO", "DEBUG"
-    * @disableAlerts {Boolean} Show alerts
-    */
+	/**
+	* Returns a log Object
+	* @logFile {File|String} Path to logfile as File Object or String.
+	* @logLevel {String} Log Threshold  "OFF", "ERROR", "WARN", "INFO", "DEBUG"
+	* @disableAlerts {Boolean} Show alerts
+	*/
 	SELF.getLogger = function (logFile, logLevel, disableAlerts) {
 		if (logFile == undefined) {
 			throw Error("Cannot instantiate Log without Logfile. Please provide a File");
@@ -408,7 +415,7 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 					INNER.writeLog(message, "INFO", logFile);
 					counter.info++;
 					messages.info.push(message);
-					messages.all.push(message);
+					messages.all.push("INFO: " + message);
 				}
 			},
 			/**
@@ -422,7 +429,7 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 					INNER.writeLog(message, "INFO", logFile);
 					counter.info++;
 					messages.info.push(message);
-					messages.all.push(message);
+					messages.all.push("INFO: " + message);
 					INNER.showAlert("[INFO]", message, localize({ en: "informations", de: " der Informationen" }));
 				}
 			},
@@ -439,12 +446,12 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 					INNER.writeLog(message, "INFO", logFile);
 					counter.info++;
 					messages.info.push(message);
-					messages.all.push(message);
+					messages.all.push("INFO: " + message);
 				}
 				if (INNER.logLevel <= 2) {
 					INNER.writeLog(message, "INFO", logFile);
 					messages.warn.push(message);
-					messages.all.push(message);
+					messages.all.push("INFO: " + message);
 				}
 			},
 			/**
@@ -461,7 +468,7 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 					INNER.writeLog(message, "WARN", logFile);
 					counter.warn++;
 					messages.warn.push(message);
-					messages.all.push(message);
+					messages.all.push("WARN: " + message);
 				}
 			},
 			/**
@@ -475,7 +482,7 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 					INNER.writeLog(message, "WARN", logFile);
 					counter.warn++;
 					messages.warn.push(message);
-					messages.all.push(message);
+					messages.all.push("WARN: " + message);
 					INNER.showAlert("[WARN]", message + "\n\nPrüfen Sie auch das Logfile:\n" + logFile, localize({ en: "warnings", de: "der Warnungen" }));
 				}
 			},
@@ -490,7 +497,7 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 					INNER.writeLog(message, "ERROR", logFile);
 					counter.error++;
 					messages.error.push(message);
-					messages.all.push(message);
+					messages.all.push("ERROR: " + message);
 				}
 			},
 
@@ -574,8 +581,9 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 			/**
 			* Returns all warnings
 			*/
-			getWarnings: function () {
-				return messages.warn.join("\n");
+			getWarnings: function (separator) {
+				if (!separator) separator = "\n";
+				return messages.warn.join(separator);
 			},
 			/**
 			* Shows all messages
@@ -592,8 +600,9 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 			/**
 			* Returns all infos
 			*/
-			getInfos: function () {
-				return messages.info.join("\n");
+			getInfos: function (separator) {
+				if (!separator) separator = "\n";
+				return messages.info.join(separator);
 			},
 			/**
 			* Shows all errors
@@ -604,16 +613,22 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 			/**
 			* Returns all errors
 			*/
-			getErrors: function () {
-				return messages.error.join("\n");
+			getErrors: function (separator) {
+				if (!separator) separator = "\n";
+				return messages.error.join(separator);
 			},
+
+			getMessages: function (separator) {
+				if (!separator) separator = "\n";
+				return messages.all.join(separator);
+			},
+
 			/**
 			* Returns the counter Object
 			*/
 			getCounters: function () {
 				return counter;
 			},
-
 
 			/**
 			* Set silent Mode
@@ -666,7 +681,7 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 				INNER.writeLog(message, "INFO", logFile);
 				counter.info++;
 				messages.info.push(message);
-				messages.all.push(message);
+				messages.all.push("INFO: " + message);
 				if (typeof px != "undefined" && px.hasOwnProperty("debug") && px.debug) {
 					$.writeln(message);
 				}
@@ -848,13 +863,13 @@ function processDok(dok) {
 		// Mails Adressen verarbeiten 
 		if (configObject.createMailLinks) {
 			var MailProtocol = "(?i)(?<![@\\-])\\b(?:mailto://)?";
-			var MailName = "[\\n\\x{E009}\\l][\\n\\x{E009}\\l._-]+\\@";
+			var MailName = "[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d._-]+\\@";
 			var MailDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
 			if (configObject.allowLongTLDs) {
 				var MailTLD = "(?:[\\n\\x{E009}\\l]{2,}+|xn--[\\n\\x{E009}\\l\\d]{2,})";
 			}
 			else {
-				var MailTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|COM|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
+				var MailTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|COM|CO|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
 			}
 			var MailEnd = "(?=(\\.\\s|\\.\\x{E009}|,|;|>|:|\\)|]|\"|\'|\\x{E009}|/|\\s))";
 			app.findGrepPreferences.findWhat = MailProtocol + MailName + MailDomain + MailTLD + MailEnd;
@@ -932,13 +947,47 @@ function processDok(dok) {
 				}
 			}
 
+			// Force short and old TLDs with /urltext
+			URLProtocol = "(?i)(?<![@\\-])\\b";
+			URLFirstDomainPart = "";
+			URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
+			URLTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|COM|CO|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
+			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + "/.{2,}?" + URLEnd;
+			findResults = dok.findGrep(true);
 
+			for (var i = 0; i < findResults.length; i++) {
+				var textObject = findResults[i];
+				var url = getWebURL(textObject.contents);
+				var result = createHyperLink(dok, textObject, url, configObject);
+				if (result) {
+					counter++;
+					log.info("URL-Hyperlink Force short and old TLDs: " + textObject.contents + " -> " + url + " counter " + counter);
+				}
+			}
 
 			// Force short and old TLDs
 			URLProtocol = "(?i)(?<![@\\-])\\b";
 			URLFirstDomainPart = "";
 			URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
-			URLTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|CO|COM|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
+			URLTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|COM|CO|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
+			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
+			findResults = dok.findGrep(true);
+
+			for (var i = 0; i < findResults.length; i++) {
+				var textObject = findResults[i];
+				var url = getWebURL(textObject.contents);
+				var result = createHyperLink(dok, textObject, url, configObject);
+				if (result) {
+					counter++;
+					log.info("URL-Hyperlink Force short and old TLDs: " + textObject.contents + " -> " + url + " counter " + counter);
+				}
+			}
+
+			// Force short and old TLDs
+			URLProtocol = "(?i)(?<![@\\-])\\b";
+			URLFirstDomainPart = "";
+			URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
+			URLTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|COM|CO|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
 			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
 			findResults = dok.findGrep(true);
 
