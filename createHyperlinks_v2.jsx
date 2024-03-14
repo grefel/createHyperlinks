@@ -7,7 +7,7 @@
 
 var px = {
 	projectName: "createHyperlinks",
-	version: "2023-01-21-v2.4",
+	version: "2024-03-14-v2.4",
 
 	showSummary: true,
 
