@@ -1,4 +1,5 @@
 
-log/createHyperlinks_v2.*.jsx_log.txt
+log/*
 *.idlk
 20190802_createHyperlinksBug*
+.vscode/launch.json
