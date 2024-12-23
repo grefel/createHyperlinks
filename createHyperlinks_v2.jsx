@@ -7,7 +7,7 @@
 
 var px = {
 	projectName: "createHyperlinks",
-	version: "2024-03-14-v2.4",
+	version: "2024-12-23-v2.5",
 
 	showSummary: true,
 
@@ -924,7 +924,7 @@ function processDok(dok) {
 			var URLTLD = MailTLD;
 			var URLText = "(?:(?:/|/\\x{E009}\\n|\\?|#|:)[^\\s\\].,;>:\"')]{2,}(?:\\.[a-Z]{2,5})?)?";
 
-			var URLEnd = MailEnd;
+			var URLEnd = "(?=(\\.\\s|\\.\\x{E009}|,|;|>|\\?|!|:|\\)|]|\"|\'|\\x{E009}|\\s|$))";
 			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
 			findResults = dok.findGrep(true);
 
@@ -960,7 +960,7 @@ function processDok(dok) {
 			URLProtocol = "(?i)(?<![@\\-])\\b(?:http://|https://|www\\.)";
 			URLFirstDomainPart = "";
 			URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
-			var URLEnd = MailEnd;
+			var URLEnd = "(?=(\\.\\s|\\.\\x{E009}|,|;|>|\\?|!|:|\\)|]|\"|\'|\\x{E009}|\\s|$))";
 
 			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
 			findResults = dok.findGrep(true);
