@@ -6,21 +6,21 @@
 
 
 var px = {
-	projectName: "createHyperlinks",
-	version: "2024-12-23-v2.5",
+    projectName: "createHyperlinks",
+    version: "2025-03-05-v2.51",
 
-	showSummary: true,
+    showSummary: true,
 
-	// Verwaltung
-	runWithUndo: true,
-	showGUI: true,
-	appendLog: true,
-	debug: false
+    // Verwaltung
+    runWithUndo: true,
+    showGUI: true,
+    appendLog: true,
+    debug: false
 }
 
 if (app.extractLabel("px:debugID") == "Jp07qcLlW3aDHuCoNpBK_Gregor-") {
-	px.debug = true;
-	px.showGUI = true;
+    px.debug = true;
+    px.showGUI = true;
 
 }
 
@@ -226,7 +226,7 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
             }
             var debug = "no-debug-flag";
             if ($.global.hasOwnProperty("px") && $.global.px.hasOwnProperty("debug")) {
-                debug =  px.debug + "";
+                debug = px.debug + "";
             }
             var callingScriptVersion = "    " + projectName + " v" + version;
             var msg = "Informationen zum Skript: Version: " + version + " Debug: " + debug + " ScriptPrefVersion: " + app.scriptPreferences.version + " InDesign " + app.version + "\n\n";
@@ -263,10 +263,10 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
         else if (!INNER.disableAlerts && msgArray.length > 0) {
             var callingScriptVersion = "    ";
             if ($.global.hasOwnProperty("px") && $.global.px.hasOwnProperty("projectName")) {
-            	callingScriptVersion += px.projectName;
+                callingScriptVersion += px.projectName;
             }
             if ($.global.hasOwnProperty("px") && $.global.px.hasOwnProperty("version")) {
-            	callingScriptVersion += " v" + px.version;
+                callingScriptVersion += " v" + px.version;
             }
             var msg = msgArray.join("\n");
             var dialogWin = new Window("dialog", title + callingScriptVersion);
@@ -747,86 +747,86 @@ $.global.hasOwnProperty('idsLog') || (function (HOST, SELF) {
 main();
 
 function main() {
-	if (app.documents.length == 0) {
-		alert("Kein Dokument geöffnet", "Hinweis");
-		return;
-	}
-	if (app.layoutWindows.length == 0) {
-		alert("Kein Dokument sichtbar", "Hinweis");
-		return;
-	}
+    if (app.documents.length == 0) {
+        alert("Kein Dokument geöffnet", "Hinweis");
+        return;
+    }
+    if (app.layoutWindows.length == 0) {
+        alert("Kein Dokument sichtbar", "Hinweis");
+        return;
+    }
 
-	// Init Log
-	initLog();
+    // Init Log
+    initLog();
 
-	var dok = app.documents[0];
-	log.info("Verarbeite Datei: " + dok.name);
+    var dok = app.documents[0];
+    log.info("Verarbeite Datei: " + dok.name);
 
-	var ial = app.scriptPreferences.userInteractionLevel;
-	var redraw = app.scriptPreferences.enableRedraw;
-	var scriptPrefVersion = app.scriptPreferences.version;
+    var ial = app.scriptPreferences.userInteractionLevel;
+    var redraw = app.scriptPreferences.enableRedraw;
+    var scriptPrefVersion = app.scriptPreferences.version;
 
-	if (px.debug) {
-		app.scriptPreferences.version = parseInt(app.version);
-		log.info("processDok mit app.scriptPreferences.version " + app.scriptPreferences.version + " app.version " + app.version);
-		if (checkDok(dok)) {
-			if (px.runWithUndo) {
-				app.doScript(processDok, ScriptLanguage.JAVASCRIPT, [dok], UndoModes.ENTIRE_SCRIPT, px.projectName);
-			}
-			else {
-				processDok(dok);
-			}
-		}
-	}
-	else {
-		try {
-			if (dok && dok.isValid) {
+    if (px.debug) {
+        app.scriptPreferences.version = parseInt(app.version);
+        log.info("processDok mit app.scriptPreferences.version " + app.scriptPreferences.version + " app.version " + app.version);
+        if (checkDok(dok)) {
+            if (px.runWithUndo) {
+                app.doScript(processDok, ScriptLanguage.JAVASCRIPT, [dok], UndoModes.ENTIRE_SCRIPT, px.projectName);
+            }
+            else {
+                processDok(dok);
+            }
+        }
+    }
+    else {
+        try {
+            if (dok && dok.isValid) {
 
-				app.scriptPreferences.userInteractionLevel = UserInteractionLevels.NEVER_INTERACT;
-				app.scriptPreferences.enableRedraw = false;
-				app.scriptPreferences.version = parseInt(app.version);
-				log.info("processDok mit app.scriptPreferences.version " + app.scriptPreferences.version + " app.version " + app.version);
+                app.scriptPreferences.userInteractionLevel = UserInteractionLevels.NEVER_INTERACT;
+                app.scriptPreferences.enableRedraw = false;
+                app.scriptPreferences.version = parseInt(app.version);
+                log.info("processDok mit app.scriptPreferences.version " + app.scriptPreferences.version + " app.version " + app.version);
 
-				if (checkDok(dok)) {
-					if (px.runWithUndo) {
-						app.doScript(processDok, ScriptLanguage.JAVASCRIPT, [dok], UndoModes.ENTIRE_SCRIPT, px.projectName);
-					}
-					else {
-						processDok(dok);
-					}
-				}
-			}
-		}
-		catch (e) {
-			log.warn(e);
-		}
-		finally {
-			app.scriptPreferences.userInteractionLevel = ial;
-			app.scriptPreferences.enableRedraw = redraw;
-			app.scriptPreferences.version = scriptPrefVersion;
-			app.findGrepPreferences = NothingEnum.NOTHING;
-			app.changeGrepPreferences = NothingEnum.NOTHING;
-		}
-	}
+                if (checkDok(dok)) {
+                    if (px.runWithUndo) {
+                        app.doScript(processDok, ScriptLanguage.JAVASCRIPT, [dok], UndoModes.ENTIRE_SCRIPT, px.projectName);
+                    }
+                    else {
+                        processDok(dok);
+                    }
+                }
+            }
+        }
+        catch (e) {
+            log.warn(e);
+        }
+        finally {
+            app.scriptPreferences.userInteractionLevel = ial;
+            app.scriptPreferences.enableRedraw = redraw;
+            app.scriptPreferences.version = scriptPrefVersion;
+            app.findGrepPreferences = NothingEnum.NOTHING;
+            app.changeGrepPreferences = NothingEnum.NOTHING;
+        }
+    }
 
-	if (log.getCounters().warn > 0) {
-		log.showWarnings();
-	}
-	log.info("Skriptlauf Ende");
-	log.elapsedTime();
-	if (px.showSummary) {
-		var dialogWin = new Window("dialog", px.projectName + px.version);
-		dialogWin.etMsg = dialogWin.add("edittext", undefined, px.mailtoSummary + "\n" + px.urlSummary, { multiline: true, scrolling: true });
-		dialogWin.etMsg.maximumSize.height = 300;
-		dialogWin.etMsg.minimumSize.width = 500;
+    if (log.getCounters().warn > 0) {
+        log.showWarnings();
+    }
+    log.info("Skriptlauf Ende");
+    log.elapsedTime();
+    if (px.showSummary) {
+        var dialogWin = new Window("dialog", px.projectName + px.version);
+        dialogWin.etMsg = dialogWin.add("edittext", undefined, px.mailtoSummary + "\n" + px.urlSummary, { multiline: true, scrolling: true });
+        dialogWin.etMsg.maximumSize.height = 300;
+        dialogWin.etMsg.minimumSize.width = 500;
 
-		dialogWin.gControl = dialogWin.add("group");
-		dialogWin.gControl.preferredSize.width = 500;
-		dialogWin.gControl.alignChildren = ['right', 'center'];
-		dialogWin.gControl.margins = 0;
-		dialogWin.gControl.add("button", undefined, "Ok", { name: "ok" });
-		dialogWin.show();
-	}
+        dialogWin.gControl = dialogWin.add("group");
+        dialogWin.gControl.preferredSize.width = 500;
+        dialogWin.gControl.alignChildren = ['right', 'center'];
+        dialogWin.gControl.margins = 0;
+        dialogWin.gControl.add("button", undefined, "Ok", { name: "ok" });
+        dialogWin.show();
+    }
 }
 
 
@@ -834,422 +834,423 @@ function main() {
 
 /* Functions structuring the execution */
 function checkDok(dok) {
-	// Hier darf im Dokument keine Änderung vorgenommen werden, weil diese Außerhalb des UNDO wären!
-	// Fehler --> 
-	// log.warn("Wir haben ein Problem --> return false");
+    // Hier darf im Dokument keine Änderung vorgenommen werden, weil diese Außerhalb des UNDO wären!
+    // Fehler --> 
+    // log.warn("Wir haben ein Problem --> return false");
 
-	return true;
+    return true;
 }
 
 function processDok(dok) {
-	if (px.runWithUndo) {
-		dok = dok[0];
-	}
-	var configObject = getConfig(dok);
-	if (configObject == 2) {
-		// User canceled
-		px.showSummary = false;
-		return;
-	}
+    if (px.runWithUndo) {
+        dok = dok[0];
+    }
+    var configObject = getConfig(dok);
+    if (configObject == 2) {
+        // User canceled
+        px.showSummary = false;
+        return;
+    }
 
-	try {
-		// Save Options
-		var saveFindGrepOptions = {};
-		saveFindGrepOptions.includeFootnotes = app.findChangeGrepOptions.includeFootnotes;
-		saveFindGrepOptions.includeHiddenLayers = app.findChangeGrepOptions.includeHiddenLayers;
-		saveFindGrepOptions.includeLockedLayersForFind = app.findChangeGrepOptions.includeLockedLayersForFind;
-		saveFindGrepOptions.includeLockedStoriesForFind = app.findChangeGrepOptions.includeLockedStoriesForFind;
-		saveFindGrepOptions.includeMasterPages = app.findChangeGrepOptions.includeMasterPages;
-		if (app.findChangeGrepOptions.hasOwnProperty("searchBackwards")) saveFindGrepOptions.searchBackwards = app.findChangeGrepOptions.searchBackwards;
+    try {
+        // Save Options
+        var saveFindGrepOptions = {};
+        saveFindGrepOptions.includeFootnotes = app.findChangeGrepOptions.includeFootnotes;
+        saveFindGrepOptions.includeHiddenLayers = app.findChangeGrepOptions.includeHiddenLayers;
+        saveFindGrepOptions.includeLockedLayersForFind = app.findChangeGrepOptions.includeLockedLayersForFind;
+        saveFindGrepOptions.includeLockedStoriesForFind = app.findChangeGrepOptions.includeLockedStoriesForFind;
+        saveFindGrepOptions.includeMasterPages = app.findChangeGrepOptions.includeMasterPages;
+        if (app.findChangeGrepOptions.hasOwnProperty("searchBackwards")) saveFindGrepOptions.searchBackwards = app.findChangeGrepOptions.searchBackwards;
 
-		// Set Options
-		app.findChangeGrepOptions.includeFootnotes = true;
-		app.findChangeGrepOptions.includeHiddenLayers = true;
-		app.findChangeGrepOptions.includeLockedLayersForFind = false;
-		app.findChangeGrepOptions.includeLockedStoriesForFind = false;
-		app.findChangeGrepOptions.includeMasterPages = configObject.processMasterSpread;
-		if (app.findChangeGrepOptions.hasOwnProperty("searchBackwards")) app.findChangeGrepOptions.searchBackwards = false;
+        // Set Options
+        app.findChangeGrepOptions.includeFootnotes = true;
+        app.findChangeGrepOptions.includeHiddenLayers = true;
+        app.findChangeGrepOptions.includeLockedLayersForFind = false;
+        app.findChangeGrepOptions.includeLockedStoriesForFind = false;
+        app.findChangeGrepOptions.includeMasterPages = configObject.processMasterSpread;
+        if (app.findChangeGrepOptions.hasOwnProperty("searchBackwards")) app.findChangeGrepOptions.searchBackwards = false;
 
-		// Reset Dialog
-		app.findGrepPreferences = NothingEnum.nothing;
-		app.changeGrepPreferences = NothingEnum.nothing;
+        // Reset Dialog
+        app.findGrepPreferences = NothingEnum.nothing;
+        app.changeGrepPreferences = NothingEnum.nothing;
 
-		var result = false;
-		var counter = 0;
+        var result = false;
+        var counter = 0;
 
-		// fixLineEndings this breaks existing links ... especially toc
-		// app.findGrepPreferences.findWhat = "\\n|\\r";
-		// app.changeGrepPreferences.changeTo = "\\x{E009}$0"
-		// dok.changeGrep();
+        // fixLineEndings this breaks existing links ... especially toc
+        // app.findGrepPreferences.findWhat = "\\n|\\r";
+        // app.changeGrepPreferences.changeTo = "\\x{E009}$0"
+        // dok.changeGrep();
 
-		app.findGrepPreferences.findWhat = "\\z";
-		var textEndings = dok.findGrep(true);
-		for (var t = 0; t < textEndings.length; t++) {
-			textEndings[t].contents = "\uE009";
-		}
+        app.findGrepPreferences.findWhat = "\\z";
+        var textEndings = dok.findGrep(true);
+        for (var t = 0; t < textEndings.length; t++) {
+            textEndings[t].contents = "\uE009";
+        }
 
-		// Mails Adressen verarbeiten 
-		if (configObject.createMailLinks) {
-			var MailProtocol = "(?i)(?<![@\\-])\\b(?:mailto://)?";
-			var MailName = "[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d._-]+\\@";
-			var MailDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
-			if (configObject.allowLongTLDs) {
-				var MailTLD = "(?:[\\n\\x{E009}\\l]{2,}+|xn--[\\n\\x{E009}\\l\\d]{2,})";
-			}
-			else {
-				var MailTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|COM|CO|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
-			}
-			var MailEnd = "(?=(\\.\\s|\\.\\x{E009}|,|;|>|\\?|!|:|\\)|]|\"|\'|\\x{E009}|/|\\s))";
-			app.findGrepPreferences.findWhat = MailProtocol + MailName + MailDomain + MailTLD + MailEnd;
-			var findResults = dok.findGrep(true);
+        // Mails Adressen verarbeiten 
+        if (configObject.createMailLinks) {
+            var MailProtocol = "(?i)(?<![@\\-])\\b(?:mailto://)?";
+            var MailName = "[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d._-]+\\@";
+            var MailDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
+            if (configObject.allowLongTLDs) {
+                var MailTLD = "(?:[\\n\\x{E009}\\l]{2,}+|xn--[\\n\\x{E009}\\l\\d]{2,})";
+            }
+            else {
+                var MailTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|COM|CO|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
+            }
+            var MailEnd = "(?=(\\.\\s|\\.\\x{E009}|,|;|>|\\?|!|:|\\)|]|\"|\'|\\x{E009}|/|\\s))";
+            app.findGrepPreferences.findWhat = MailProtocol + MailName + MailDomain + MailTLD + MailEnd;
+            var findResults = dok.findGrep(true);
 
-			for (var i = 0; i < findResults.length; i++) {
-				var textObject = findResults[i];
-				var mailAdress = getMail(textObject.contents);
-				result = createHyperLink(dok, textObject, mailAdress, configObject);
-				if (result) {
-					counter++;
-					log.info("Mailto-Hyperlink: " + textObject.contents + " -> " + mailAdress);
-				}
-			}
-			log.info(counter + " Mailto-Hyperlinks!");
-			px.mailtoSummary = counter + " Mailto-Hyperlinks";
-			counter = 0;
-		}
-		// Web URLs verarbeiten 
-		if (configObject.createWebLinks) {
-			var URLProtocol = "(?i)(?<![@\\-])\\b(?:http://|https://|www\\.)?";
-			var URLFirstDomainPart = "(?:[\\l\\d][\\l\\d_-]+\\.){1,}";
-			var URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
-			var URLTLD = MailTLD;
-			var URLText = "(?:(?:/|/\\x{E009}\\n|\\?|#|:)[^\\s\\].,;>:\"')]{2,}(?:\\.[a-Z]{2,5})?)?";
+            for (var i = 0; i < findResults.length; i++) {
+                var textObject = findResults[i];
+                var mailAdress = getMail(textObject.contents);
+                result = createHyperLink(dok, textObject, mailAdress, configObject);
+                if (result) {
+                    counter++;
+                    log.info("Mailto-Hyperlink: " + textObject.contents + " -> " + mailAdress);
+                }
+            }
+            log.info(counter + " Mailto-Hyperlinks!");
+            px.mailtoSummary = counter + " Mailto-Hyperlinks";
+            counter = 0;
+        }
+        // Web URLs verarbeiten 
+        if (configObject.createWebLinks) {
+            var URLProtocol = "(?i)(?<![@\\-])\\b(?:http://|https://|www\\.)?";
+            var URLFirstDomainPart = "(?:[\\l\\d][\\l\\d_-]+\\.){1,}";
+            var URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
+            var URLTLD = MailTLD;
+            var URLText = "(?:(?:/|/\\x{E009}\\n|\\?|#|:)[^\\s\\].,;>:\"')]{2,}(?:\\.[a-Z]{2,5})?)?";
 
-			var URLEnd = "(?=(\\.\\s|\\.\\x{E009}|,|;|>|\\?|!|:|\\)|]|\"|\'|\\x{E009}|\\s|$))";
-			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
-			findResults = dok.findGrep(true);
+            var URLEnd = "(?=(\\.\\s|\\.\\x{E009}|,|;|>|\\?|!|:|\\)|]|\"|\'|\\x{E009}|\\s|$))";
+            app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
+            findResults = dok.findGrep(true);
 
-			for (var i = 0; i < findResults.length; i++) {
-				var textObject = findResults[i];
-				var url = getWebURL(textObject.contents);
-				result = createHyperLink(dok, textObject, url, configObject);
-				if (result) {
-					counter++;
-					log.info("URL-Hyperlink 1: " + textObject.contents + " -> " + url + " counter " + counter);
-				}
-			}
+            for (var i = 0; i < findResults.length; i++) {
+                var textObject = findResults[i];
+                var url = getWebURL(textObject.contents);
+                result = createHyperLink(dok, textObject, url, configObject);
+                if (result) {
+                    counter++;
+                    log.info("URL-Hyperlink 1: " + textObject.contents + " -> " + url + " counter " + counter);
+                }
+            }
 
-			// Force http(s) or www at beginning at the beginning of line and end of line
-			URLProtocol = "(?i)^(?:http://|https://|www\\.)";
-			URLFirstDomainPart = "";
-			URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
-			var URLEnd = "$";
-			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
-			findResults = dok.findGrep(true);
+            // Force http(s) or www at beginning at the beginning of line and end of line
+            URLProtocol = "(?i)^(?:http://|https://|www\\.)";
+            URLFirstDomainPart = "";
+            URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
+            var URLEnd = "$";
+            app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
+            findResults = dok.findGrep(true);
 
-			for (var i = 0; i < findResults.length; i++) {
-				var textObject = findResults[i];
-				var url = getWebURL(textObject.contents);
-				var result = createHyperLink(dok, textObject, url, configObject);
-				if (result) {
-					counter++;
-					log.info("URL-Hyperlink Force http(s) or www at the beginning of line and end of line: " + textObject.contents + " -> " + url + " counter " + counter);
-				}
-			}
+            for (var i = 0; i < findResults.length; i++) {
+                var textObject = findResults[i];
+                var url = getWebURL(textObject.contents);
+                var result = createHyperLink(dok, textObject, url, configObject);
+                if (result) {
+                    counter++;
+                    log.info("URL-Hyperlink Force http(s) or www at the beginning of line and end of line: " + textObject.contents + " -> " + url + " counter " + counter);
+                }
+            }
 
-			// Force http(s) or www at beginning
-			URLProtocol = "(?i)(?<![@\\-])\\b(?:http://|https://|www\\.)";
-			URLFirstDomainPart = "";
-			URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
-			var URLEnd = "(?=(\\.\\s|\\.\\x{E009}|,|;|>|\\?|!|:|\\)|]|\"|\'|\\x{E009}|\\s|$))";
+            // Force http(s) or www at beginning
+            URLProtocol = "(?i)(?<![@\\-])\\b(?:http://|https://|www\\.)";
+            URLFirstDomainPart = "";
+            URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
+            var URLEnd = "(?=(\\.\\s|\\.\\x{E009}|,|;|>|\\?|!|:|\\)|]|\"|\'|\\x{E009}|\\s|$))";
 
-			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
-			findResults = dok.findGrep(true);
+            app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
+            findResults = dok.findGrep(true);
 
-			for (var i = 0; i < findResults.length; i++) {
-				var textObject = findResults[i];
-				var url = getWebURL(textObject.contents);
-				var result = createHyperLink(dok, textObject, url, configObject);
-				if (result) {
-					counter++;
-					log.info("URL-Hyperlink Force http(s) or www at beginning: " + textObject.contents + " -> " + url + " counter " + counter);
-				}
-			}
+            for (var i = 0; i < findResults.length; i++) {
+                var textObject = findResults[i];
+                var url = getWebURL(textObject.contents);
+                var result = createHyperLink(dok, textObject, url, configObject);
+                if (result) {
+                    counter++;
+                    log.info("URL-Hyperlink Force http(s) or www at beginning: " + textObject.contents + " -> " + url + " counter " + counter);
+                }
+            }
 
-			// Force short and old TLDs with /urltext
-			URLProtocol = "(?i)(?<![@\\-])\\b";
-			URLFirstDomainPart = "";
-			URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
-			URLTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|COM|CO|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
-			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + "/.{2,}?" + URLEnd;
-			findResults = dok.findGrep(true);
+            // Force short and old TLDs with /urltext
+            URLProtocol = "(?i)(?<![@\\-])\\b";
+            URLFirstDomainPart = "";
+            URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
+            URLTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|COM|CO|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
+            app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + "/.{2,}?" + URLEnd;
+            findResults = dok.findGrep(true);
 
-			for (var i = 0; i < findResults.length; i++) {
-				var textObject = findResults[i];
-				var url = getWebURL(textObject.contents);
-				var result = createHyperLink(dok, textObject, url, configObject);
-				if (result) {
-					counter++;
-					log.info("URL-Hyperlink Force short and old TLDs: " + textObject.contents + " -> " + url + " counter " + counter);
-				}
-			}
+            for (var i = 0; i < findResults.length; i++) {
+                var textObject = findResults[i];
+                var url = getWebURL(textObject.contents);
+                var result = createHyperLink(dok, textObject, url, configObject);
+                if (result) {
+                    counter++;
+                    log.info("URL-Hyperlink Force short and old TLDs: " + textObject.contents + " -> " + url + " counter " + counter);
+                }
+            }
 
-			// Force short and old TLDs
-			URLProtocol = "(?i)(?<![@\\-])\\b";
-			URLFirstDomainPart = "";
-			URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
-			URLTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|COM|CO|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
-			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
-			findResults = dok.findGrep(true);
+            // Force short and old TLDs
+            URLProtocol = "(?i)(?<![@\\-])\\b";
+            URLFirstDomainPart = "";
+            URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
+            URLTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|COM|CO|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
+            app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
+            findResults = dok.findGrep(true);
 
-			for (var i = 0; i < findResults.length; i++) {
-				var textObject = findResults[i];
-				var url = getWebURL(textObject.contents);
-				var result = createHyperLink(dok, textObject, url, configObject);
-				if (result) {
-					counter++;
-					log.info("URL-Hyperlink Force short and old TLDs: " + textObject.contents + " -> " + url + " counter " + counter);
-				}
-			}
+            for (var i = 0; i < findResults.length; i++) {
+                var textObject = findResults[i];
+                var url = getWebURL(textObject.contents);
+                var result = createHyperLink(dok, textObject, url, configObject);
+                if (result) {
+                    counter++;
+                    log.info("URL-Hyperlink Force short and old TLDs: " + textObject.contents + " -> " + url + " counter " + counter);
+                }
+            }
 
-			// Force short and old TLDs
-			URLProtocol = "(?i)(?<![@\\-])\\b";
-			URLFirstDomainPart = "";
-			URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
-			URLTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|COM|CO|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
-			app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
-			findResults = dok.findGrep(true);
+            // Force short and old TLDs
+            URLProtocol = "(?i)(?<![@\\-])\\b";
+            URLFirstDomainPart = "";
+            URLDomain = "(?:[\\n\\x{E009}\\l\\d][\\n\\x{E009}\\l\\d_-]+\\.){1,}";
+            URLTLD = "(?:AC|AD|AE|AERO|AF|AG|AI|AL|AM|AN|AO|AQ|AR|ARPA|AS|ASIA|AT|AU|AW|AX|AZ|BA|BB|BD|BE|BF|BG|BH|BI|BIZ|BJ|BM|BN|BO|BR|BS|BT|BV|BW|BY|BZ|CA|CAT|CC|CD|CF|CG|CH|CI|CK|CL|CM|CN|COM|CO|COOP|CR|CU|CV|CW|CX|CY|CZ|DE|DJ|DK|DM|DO|DZ|EC|EDU|EE|EG|ER|ES|ET|EU|FI|FJ|FK|FM|FO|FR|GA|GB|GD|GE|GF|GG|GH|GI|GL|GM|GN|GOV|GP|GQ|GR|GS|GT|GU|GW|GY|HK|HM|HN|HR|HT|HU|ID|IE|IL|IM|IN|INFO|INT|IO|IQ|IR|IS|IT|JE|JM|JO|JOBS|JP|KE|KG|KH|KI|KM|KN|KP|KR|KW|KY|KZ|LA|LB|LC|LI|LK|LR|LS|LT|LU|LV|LY|MA|MC|MD|ME|MG|MH|MIL|MK|ML|MM|MN|MO|MOBI|MP|MQ|MR|MS|MT|MU|MUSEUM|MV|MW|MX|MY|MZ|NA|NAME|NC|NE|NET|NF|NG|NI|NL|NO|NP|NR|NU|NZ|OM|ORG|PA|PE|PF|PG|PH|PK|PL|PM|PN|PR|PRO|PS|PT|PW|PY|QA|RE|RO|RS|RU|RW|SA|SB|SC|SD|SE|SG|SH|SI|SJ|SK|SL|SM|SN|SO|SR|ST|SU|SV|SX|SY|SZ|TC|TD|TEL|TF|TG|TH|TJ|TK|TL|TM|TN|TO|TP|TR|TRAVEL|TT|TV|TW|TZ|UA|UG|UK|US|UY|UZ|VA|VC|VE|VG|VI|VN|VU|WF|WS|XXX|YE|YT|ZA|ZM|ZW)";
+            app.findGrepPreferences.findWhat = URLProtocol + URLFirstDomainPart + URLDomain + URLTLD + URLText + URLEnd;
+            findResults = dok.findGrep(true);
 
-			for (var i = 0; i < findResults.length; i++) {
-				var textObject = findResults[i];
-				var url = getWebURL(textObject.contents);
-				var result = createHyperLink(dok, textObject, url, configObject);
-				if (result) {
-					counter++;
-					log.info("URL-Hyperlink Force short and old TLDs: " + textObject.contents + " -> " + url + " counter " + counter);
-				}
-			}
+            for (var i = 0; i < findResults.length; i++) {
+                var textObject = findResults[i];
+                var url = getWebURL(textObject.contents);
+                var result = createHyperLink(dok, textObject, url, configObject);
+                if (result) {
+                    counter++;
+                    log.info("URL-Hyperlink Force short and old TLDs: " + textObject.contents + " -> " + url + " counter " + counter);
+                }
+            }
 
 
-			log.info(counter + " URL-Hyperlinks!");
-			px.urlSummary = counter + " URL-Hyperlinks";
-			counter = 0;
+            log.info(counter + " URL-Hyperlinks!");
+            px.urlSummary = counter + " URL-Hyperlinks";
+            counter = 0;
 
-			app.findGrepPreferences = NothingEnum.nothing;
-			app.changeGrepPreferences = NothingEnum.nothing;
-		}
-	}
-	catch (e) {
-		log.warn(e);
-	}
-	finally {
+            app.findGrepPreferences = NothingEnum.nothing;
+            app.changeGrepPreferences = NothingEnum.nothing;
+        }
+    }
+    catch (e) {
+        log.warn(e);
+    }
+    finally {
 
-		app.findGrepPreferences.findWhat = "\\x{E009}+$";
-		app.changeGrepPreferences.changeTo = ""
-		dok.changeGrep();
+        app.findGrepPreferences.findWhat = "\\x{E009}+$";
+        app.changeGrepPreferences.changeTo = ""
+        dok.changeGrep();
 
-		// Reset Options
-		app.findChangeGrepOptions.includeFootnotes = saveFindGrepOptions.includeFootnotes;
-		app.findChangeGrepOptions.includeHiddenLayers = saveFindGrepOptions.includeHiddenLayers;
-		app.findChangeGrepOptions.includeLockedLayersForFind = saveFindGrepOptions.includeLockedLayersForFind;
-		app.findChangeGrepOptions.includeLockedStoriesForFind = saveFindGrepOptions.includeLockedStoriesForFind;
-		app.findChangeGrepOptions.includeMasterPages = saveFindGrepOptions.includeMasterPages;
-		if (app.findChangeGrepOptions.hasOwnProperty("searchBackwards")) app.findChangeGrepOptions.searchBackwards = saveFindGrepOptions.searchBackwards;
+        // Reset Options
+        app.findChangeGrepOptions.includeFootnotes = saveFindGrepOptions.includeFootnotes;
+        app.findChangeGrepOptions.includeHiddenLayers = saveFindGrepOptions.includeHiddenLayers;
+        app.findChangeGrepOptions.includeLockedLayersForFind = saveFindGrepOptions.includeLockedLayersForFind;
+        app.findChangeGrepOptions.includeLockedStoriesForFind = saveFindGrepOptions.includeLockedStoriesForFind;
+        app.findChangeGrepOptions.includeMasterPages = saveFindGrepOptions.includeMasterPages;
+        if (app.findChangeGrepOptions.hasOwnProperty("searchBackwards")) app.findChangeGrepOptions.searchBackwards = saveFindGrepOptions.searchBackwards;
 
-		app.findGrepPreferences = NothingEnum.nothing;
-		app.changeGrepPreferences = NothingEnum.nothing;
+        app.findGrepPreferences = NothingEnum.nothing;
+        app.changeGrepPreferences = NothingEnum.nothing;
 
-	}
+    }
 }
 
 
 /* Functions with fine grained tasks */
 function getConfig(dok) {
-	configObject = {};
+    configObject = {};
 
-	if (!px.showGUI) {
-		configObject.applyCStyle = true;
-		configObject.cStyle = dok.characterStyles[0];
-		configObject.processMasterSpread = true;
-		return configObject;
-	}
-	var win = new Window("dialog", px.projectName + " – v" + px.version);
-	with (win) {
-		//~ 		win.sInfo = add( "statictext", undefined, "Konfigurationseinstellungen für die Erstellung der Hyperlinks", {multiline: true} );
-		//~ 		win.sInfo.alignment = "left";
-		//~ 		win.sInfo.preferredSize.width = 410;
-		//~ 		win.sInfo.preferredSize.height = 32; 
+    if (!px.showGUI) {
+        configObject.applyCStyle = true;
+        configObject.cStyle = dok.characterStyles[0];
+        configObject.processMasterSpread = true;
+        return configObject;
+    }
+    var win = new Window("dialog", px.projectName + " – v" + px.version);
+    with (win) {
+        //~ 		win.sInfo = add( "statictext", undefined, "Konfigurationseinstellungen für die Erstellung der Hyperlinks", {multiline: true} );
+        //~ 		win.sInfo.alignment = "left";
+        //~ 		win.sInfo.preferredSize.width = 410;
+        //~ 		win.sInfo.preferredSize.height = 32; 
 
-		win.pInfo = add("panel", undefined, "Welche Hyperlinks sollen erstellt werden?");
-		win.pInfo.preferredSize.width = 420;
-		win.pInfo.orientation = 'row';
-		win.pInfo.spacing = 10;
-		with (win.pInfo) {
-			win.pInfo.gInfo = add("group");
-			win.pInfo.gInfo.orientation = 'column';
-			win.pInfo.gInfo.alignChildren = ['left', 'top'];
-			win.pInfo.gInfo.margins = [0, 10, 0, 0];
-			win.pInfo.gInfo.spacing = 5;
-			with (win.pInfo.gInfo) {
-				win.pInfo.gInfo.addWebLinks = add("checkbox", undefined, "Web Hyperlinks erstellen");
-				win.pInfo.gInfo.addWebLinks.value = true;
-				win.pInfo.gInfo.addMailLinks = add("checkbox", undefined, "Mailto Hyperlinks erstellen");
-				win.pInfo.gInfo.addMailLinks.value = true;
-				win.pInfo.gInfo.allowLongTLDs = add("checkbox", undefined, "Lange/Neue TLDs erlauben (.koeln ...)");
-				win.pInfo.gInfo.allowLongTLDs.value = true;
-			}
-		}
+        win.pInfo = add("panel", undefined, "Welche Hyperlinks sollen erstellt werden?");
+        win.pInfo.preferredSize.width = 420;
+        win.pInfo.orientation = 'row';
+        win.pInfo.spacing = 10;
+        with (win.pInfo) {
+            win.pInfo.gInfo = add("group");
+            win.pInfo.gInfo.orientation = 'column';
+            win.pInfo.gInfo.alignChildren = ['left', 'top'];
+            win.pInfo.gInfo.margins = [0, 10, 0, 0];
+            win.pInfo.gInfo.spacing = 5;
+            with (win.pInfo.gInfo) {
+                win.pInfo.gInfo.addWebLinks = add("checkbox", undefined, "Web Hyperlinks erstellen");
+                win.pInfo.gInfo.addWebLinks.value = true;
+                win.pInfo.gInfo.addMailLinks = add("checkbox", undefined, "Mailto Hyperlinks erstellen");
+                win.pInfo.gInfo.addMailLinks.value = true;
+                win.pInfo.gInfo.allowLongTLDs = add("checkbox", undefined, "Lange/Neue TLDs erlauben (.koeln ...)");
+                win.pInfo.gInfo.allowLongTLDs.value = true;
+            }
+        }
 
-		win.pCharStyle = add("panel", undefined, "Soll ein Zeichenformat angewendet werden?");
-		win.pCharStyle.preferredSize.width = 420;
-		win.pCharStyle.orientation = 'row';
-		win.pCharStyle.spacing = 10;
-		with (win.pCharStyle) {
-			win.pCharStyle.gInfo = add("group");
-			win.pCharStyle.gInfo.orientation = 'column';
-			win.pCharStyle.gInfo.alignChildren = ['left', 'top'];
-			win.pCharStyle.gInfo.margins = [0, 10, 0, 0];
-			win.pCharStyle.gInfo.spacing = 5;
-			with (win.pCharStyle.gInfo) {
-				win.pCharStyle.gInfo.addCStyleCB = add("checkbox", undefined, "Zeichenformat anwenden");
-				win.pCharStyle.gInfo.addCStyleCB.value = false;
-				win.pCharStyle.gInfo.gZeichenformat = add("group");
-				with (win.pCharStyle.gInfo.gZeichenformat) {
+        win.pCharStyle = add("panel", undefined, "Soll ein Zeichenformat angewendet werden?");
+        win.pCharStyle.preferredSize.width = 420;
+        win.pCharStyle.orientation = 'row';
+        win.pCharStyle.spacing = 10;
+        with (win.pCharStyle) {
+            win.pCharStyle.gInfo = add("group");
+            win.pCharStyle.gInfo.orientation = 'column';
+            win.pCharStyle.gInfo.alignChildren = ['left', 'top'];
+            win.pCharStyle.gInfo.margins = [0, 10, 0, 0];
+            win.pCharStyle.gInfo.spacing = 5;
+            with (win.pCharStyle.gInfo) {
+                win.pCharStyle.gInfo.addCStyleCB = add("checkbox", undefined, "Zeichenformat anwenden");
+                win.pCharStyle.gInfo.addCStyleCB.value = false;
+                win.pCharStyle.gInfo.gZeichenformat = add("group");
+                with (win.pCharStyle.gInfo.gZeichenformat) {
 
-					win.pCharStyle.gInfo.gZeichenformat.sText = add("statictext", undefined, "Zeichenformat:");
-					win.pCharStyle.gInfo.gZeichenformat.sText.preferredSize.width = 100;
-					win.pCharStyle.gInfo.gZeichenformat.dd = add("dropdownlist", undefined, []);
-					for (var p = 0; p < dok.allCharacterStyles.length; p++) {
-						temp = win.pCharStyle.gInfo.gZeichenformat.dd.add('item', dok.allCharacterStyles[p].name);
-						temp.cstyle = dok.allCharacterStyles[p];
-					}
-					win.pCharStyle.gInfo.gZeichenformat.dd.preferredSize.width = 280;
-					win.pCharStyle.gInfo.gZeichenformat.dd.selection = 0;
-				}
-			}
-		}
-		win.pMasterSpread = add("panel", undefined, "Sollen Hyperlinks auf Musterdruckbögen erstellt werden?");
-		win.pMasterSpread.preferredSize.width = 420;
-		win.pMasterSpread.orientation = 'row';
-		win.pMasterSpread.spacing = 10;
-		with (win.pMasterSpread) {
-			win.pMasterSpread.gInfo = add("group");
-			win.pMasterSpread.gInfo.orientation = 'column';
-			win.pMasterSpread.gInfo.alignChildren = ['left', 'top'];
-			win.pMasterSpread.gInfo.margins = [0, 10, 0, 0];
-			win.pMasterSpread.gInfo.spacing = 5;
-			with (win.pMasterSpread.gInfo) {
-				win.pMasterSpread.gInfo.gZeichenformat = add("group");
-				with (win.pMasterSpread.gInfo.gZeichenformat) {
-					win.pMasterSpread.gInfo.gZeichenformat.addCStyleCB = add("checkbox", undefined, "Musterdruckbögen einbeziehen");
-					win.pMasterSpread.gInfo.gZeichenformat.addCStyleCB.value = false;
-				}
-			}
-		}
+                    win.pCharStyle.gInfo.gZeichenformat.sText = add("statictext", undefined, "Zeichenformat:");
+                    win.pCharStyle.gInfo.gZeichenformat.sText.preferredSize.width = 100;
+                    win.pCharStyle.gInfo.gZeichenformat.dd = add("dropdownlist", undefined, []);
+                    for (var p = 0; p < dok.allCharacterStyles.length; p++) {
+                        temp = win.pCharStyle.gInfo.gZeichenformat.dd.add('item', dok.allCharacterStyles[p].name);
+                        temp.cstyle = dok.allCharacterStyles[p];
+                    }
+                    win.pCharStyle.gInfo.gZeichenformat.dd.preferredSize.width = 280;
+                    win.pCharStyle.gInfo.gZeichenformat.dd.selection = 0;
+                }
+            }
+        }
+        win.pMasterSpread = add("panel", undefined, "Sollen Hyperlinks auf Musterdruckbögen erstellt werden?");
+        win.pMasterSpread.preferredSize.width = 420;
+        win.pMasterSpread.orientation = 'row';
+        win.pMasterSpread.spacing = 10;
+        with (win.pMasterSpread) {
+            win.pMasterSpread.gInfo = add("group");
+            win.pMasterSpread.gInfo.orientation = 'column';
+            win.pMasterSpread.gInfo.alignChildren = ['left', 'top'];
+            win.pMasterSpread.gInfo.margins = [0, 10, 0, 0];
+            win.pMasterSpread.gInfo.spacing = 5;
+            with (win.pMasterSpread.gInfo) {
+                win.pMasterSpread.gInfo.gZeichenformat = add("group");
+                with (win.pMasterSpread.gInfo.gZeichenformat) {
+                    win.pMasterSpread.gInfo.gZeichenformat.addCStyleCB = add("checkbox", undefined, "Musterdruckbögen einbeziehen");
+                    win.pMasterSpread.gInfo.gZeichenformat.addCStyleCB.value = false;
+                }
+            }
+        }
 
-		// Steuerung Ok/Cancel
-		win.groupStart = add("group");
-		win.groupStart.preferredSize.width = 420;
-		win.groupStart.alignChildren = ['right', 'center'];
-		win.groupStart.margins = 0;
-		with (win.groupStart) {
-			win.groupStart.butOk = add("button", undefined, "Ok");
-			win.groupStart.butCancel = add("button", undefined, "Abbrechen");
-		}
-	}
+        // Steuerung Ok/Cancel
+        win.groupStart = add("group");
+        win.groupStart.preferredSize.width = 420;
+        win.groupStart.alignChildren = ['right', 'center'];
+        win.groupStart.margins = 0;
+        with (win.groupStart) {
+            win.groupStart.butOk = add("button", undefined, "Ok");
+            win.groupStart.butCancel = add("button", undefined, "Abbrechen");
+        }
+    }
 
 
-	// Ok / Cancel
-	win.groupStart.butOk.onClick = function () {
-		configObject.createWebLinks = win.pInfo.gInfo.addWebLinks.value;
-		log.info("User Web-Links erstellen : " + configObject.createWebLinks);
-		configObject.createMailLinks = win.pInfo.gInfo.addMailLinks.value;
-		log.info("User Mail-Links erstellen : " + configObject.createMailLinks);
-		configObject.allowLongTLDs = win.pInfo.gInfo.allowLongTLDs.value;
-		log.info("User erlaubt lange TLD : " + configObject.allowLongTLDs);
+    // Ok / Cancel
+    win.groupStart.butOk.onClick = function () {
+        configObject.createWebLinks = win.pInfo.gInfo.addWebLinks.value;
+        log.info("User Web-Links erstellen : " + configObject.createWebLinks);
+        configObject.createMailLinks = win.pInfo.gInfo.addMailLinks.value;
+        log.info("User Mail-Links erstellen : " + configObject.createMailLinks);
+        configObject.allowLongTLDs = win.pInfo.gInfo.allowLongTLDs.value;
+        log.info("User erlaubt lange TLD : " + configObject.allowLongTLDs);
 
-		configObject.applyCStyle = win.pCharStyle.gInfo.addCStyleCB.value;
-		log.info("User will Zeichenformat anwenden: " + configObject.applyCStyle);
-		configObject.cStyle = win.pCharStyle.gInfo.gZeichenformat.dd.selection.cstyle;
-		log.info("User wählt Zeichenformat: " + configObject.cStyle.name);
-		configObject.processMasterSpread = win.pMasterSpread.gInfo.gZeichenformat.addCStyleCB.value;
-		log.info("User will Musterseiten verarbeiten: " + configObject.processMasterSpread);
-		win.close(0);
-	}
-	win.groupStart.butCancel.onClick = function () {
-		win.close(2);
-	}
+        configObject.applyCStyle = win.pCharStyle.gInfo.addCStyleCB.value;
+        log.info("User will Zeichenformat anwenden: " + configObject.applyCStyle);
+        configObject.cStyle = win.pCharStyle.gInfo.gZeichenformat.dd.selection.cstyle;
+        log.info("User wählt Zeichenformat: " + configObject.cStyle.name);
+        configObject.processMasterSpread = win.pMasterSpread.gInfo.gZeichenformat.addCStyleCB.value;
+        log.info("User will Musterseiten verarbeiten: " + configObject.processMasterSpread);
+        win.close(0);
+    }
+    win.groupStart.butCancel.onClick = function () {
+        win.close(2);
+    }
 
-	// Show Window
-	win.center();
-	var result = win.show();
-	if (result == 2) {
-		return 2
-	}
-	else {
-		return configObject;
-	}
+    // Show Window
+    win.center();
+    var result = win.show();
+    if (result == 2) {
+        return 2
+    }
+    else {
+        return configObject;
+    }
 }
 
 
 /* Erstellt einen Hyperlink */
 function createHyperLink(dok, textObject, url, configObject) {
-	try {
-		if (configObject.applyCStyle) {
-			textObject.appliedCharacterStyle = configObject.cStyle;
-		}
-		var quelle = dok.hyperlinkTextSources.add(textObject);
-		var urlDestination = dok.hyperlinkURLDestinations.itemByName(url);
-		if (!urlDestination.isValid) urlDestination = dok.hyperlinkURLDestinations.add(url, { name: url });
-		var hlink = dok.hyperlinks.add(quelle, urlDestination);
-		hlink.name = url;
-		//~ 		log.info("Hyperink erstellt: " + textObject.contents + " -> " + url);
-		return true;
-	}
-	catch (e) {
-		if (e.number == 79111) {
-			/* "Das ausgewählte Objekt wird bereits von einem anderen Hyperlink verwendet." -> weiter, schneller als die Prüfung mit isHyperlink() */
-		}
-		else if (e.number == 79110) {
-			/* "Dieser Name wird bereits von einem anderen Objekt verwendet" -> weiter, schneller als die Prüfung mit isHyperlink() */
-			return true;
-		}
-		else {
-			log.warn(e);
-		}
-	}
-	return false;
+    try {
+        if (configObject.applyCStyle) {
+            textObject.appliedCharacterStyle = configObject.cStyle;
+        }
+
+        var quelle = dok.hyperlinkTextSources.add(textObject);
+        var urlDestination = dok.hyperlinkURLDestinations.itemByName(url);
+        if (!urlDestination.isValid) urlDestination = dok.hyperlinkURLDestinations.add(url, { hidden: true });
+        var hlink = dok.hyperlinks.add(quelle, urlDestination);
+        hlink.name = url;
+        // log.info("Hyperink erstellt: " + textObject.contents + " -> " + url);
+        return true;
+    }
+    catch (e) {
+        if (e.number == 79111) {
+            /* "Das ausgewählte Objekt wird bereits von einem anderen Hyperlink verwendet." -> schneller als die Prüfung mit isHyperlink() */
+        }
+        else if (e.number == 79110) {
+            /* "Dieser Name wird bereits von einem anderen Objekt verwendet" -> ok */
+            return true;
+        }
+        else {
+            log.warn(e);
+        }
+    }
+    return false;
 }
 
 function getWebURL(url) {
-	url = cleanInDesignString(url);
-	if (url.indexOf("http") != 0) {
-		url = "https://" + url;
-	}
-	return url;
+    url = cleanInDesignString(url);
+    if (url.indexOf("http") != 0) {
+        url = "https://" + url;
+    }
+    return url;
 }
 
 function getMail(url) {
-	url = cleanInDesignString(url);
-	if (url.indexOf("mailto") != 0) {
-		url = "mailto:" + url;
-	}
-	return url;
+    url = cleanInDesignString(url);
+    if (url.indexOf("mailto") != 0) {
+        url = "mailto:" + url;
+    }
+    return url;
 }
 
 // Clean Special Characters ... 
 function cleanInDesignString(string) {
-	string = string.replace(/[\u0003\u0007\u0016\u0008]/g, ''); // <control> Character können raus
-	string = string.replace(/\s/g, ''); // Leerräume entfernen  
-	//~ 	string = string.replace(/\n/g, ' '); // Leerräume
-	//~ 	string = string.replace(/\r/g, ' '); // Leerräume
-	//~ 	string = string.replace(/\t/g, ' '); // Leerräume
-	//~ 	string = string.replace(/[\u00A0\u202F\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A]/g, ' '); // Leerräume
-	//~ 	string = string.replace(/  +/g, ' '); // Leerräume
-	string = string.replace(/\uFEFF/g, ''); // InDesign Spezialzeichen entfernen 
-	string = string.replace(/\u00AD/g, ''); // Bedingte Trennung 
-	string = string.replace(/^\s+/, '').replace(/\s+$/, ''); // trim;
-	string = string.replace(/\uE009/g, ''); // E009 entfernen (wurde eingesetzt um den $ Bug in GREP zu umschiffen)
-	return string;
+    string = string.replace(/[\u0003\u0007\u0016\u0008]/g, ''); // <control> Character können raus
+    string = string.replace(/\s/g, ''); // Leerräume entfernen  
+    //~ 	string = string.replace(/\n/g, ' '); // Leerräume
+    //~ 	string = string.replace(/\r/g, ' '); // Leerräume
+    //~ 	string = string.replace(/\t/g, ' '); // Leerräume
+    //~ 	string = string.replace(/[\u00A0\u202F\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A]/g, ' '); // Leerräume
+    //~ 	string = string.replace(/  +/g, ' '); // Leerräume
+    string = string.replace(/\uFEFF/g, ''); // InDesign Spezialzeichen entfernen 
+    string = string.replace(/\u00AD/g, ''); // Bedingte Trennung 
+    string = string.replace(/^\s+/, '').replace(/\s+$/, ''); // trim;
+    string = string.replace(/\uE009/g, ''); // E009 entfernen (wurde eingesetzt um den $ Bug in GREP zu umschiffen)
+    return string;
 }
 
 
